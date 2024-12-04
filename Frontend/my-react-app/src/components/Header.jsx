@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "./Navbar";
-
+import { useLocation } from "react-router-dom";
+import Navbar from './Navbar'
+import Avatar from './Avatar'
+import GithubIcon from '../icons/GithubIcon'
 export default function Header() {
-  const [page, setPage] = useState("");
+    // 获取当前路径
+  const location = useLocation();
+  const pathname = location.pathname;
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const pathname = window.location.pathname;
-      const currentPage = pathname.split("/").slice(0, 2).join("/");
-      setPage(currentPage);
-    }
-  }, []);
-
+    // 分割路径并提取前两部分
+  const page = pathname.split("/").slice(0, 2).join("/");
+  
   return (
-    <header className="grid w-full grid-flow-col grid-cols-3 sm:grid-cols-4 bg-gray-100 shadow-lg">
-      {/* 可以替换为 Avatar */}
-      <div className="flex items-center px-4">
-        <span className="text-lg font-bold">Logo</span>
-      </div>
-      {/* 导航栏 */}
-      <Navbar page={page} />
-    </header>
+      <header className="grid w-full grid-cols-1 sm:grid-cols-4 items-center">
+        <div className="col-span-1">
+          <Avatar page={page} />
+        </div>
+        <div className="col-span-2">
+          <Navbar page={page} />
+        </div>
+        <div className="col-span-1 flex justify-end">
+          <GithubIcon />
+        </div>
+      </header>
   );
+
+  
 }
