@@ -1,28 +1,31 @@
-import { useLocation } from "react-router-dom";
-import Navbar from './Navbar'
-import Avatar from './Avatar'
-import GithubIcon from '../icons/GithubIcon'
+import Avatar from "./Avatar";
+import Navbar from "./Navbar";
+import GithubIcon from "../icons/GithubIcon"
+import { useLocation } from "react-router-dom"
+import { Link } from "react-router-dom";
+
+
 export default function Header() {
-    // 获取当前路径
-  const location = useLocation();
-  const pathname = location.pathname;
+    const location = useLocation();
+    const pathname = location.pathname; // 获取路径名
+    const page = pathname.split("/").slice(0, 2).join("/") || "/";
 
-    // 分割路径并提取前两部分
-  const page = pathname.split("/").slice(0, 2).join("/");
-  
-  return (
-      <header className="grid w-full grid-cols-1 sm:grid-cols-4 items-center">
-        <div className="col-span-1">
-          <Avatar page={page} />
-        </div>
-        <div className="col-span-2">
-          <Navbar page={page} />
-        </div>
-        <div className="col-span-1 flex justify-end">
-          <GithubIcon />
-        </div>
-      </header>
-  );
+    return (
+        <header className="grid w-full grid-flow-col grid-cols-3 sm:grid-cols-4">
+            <Avatar />
+            <Navbar page={page}/>
 
-  
+            <div className="flex items-center justify-end gap-2">
+                <Link to={"https://github.com/Zhiyong0105"}
+                    className="opacity-80 hover:opacity-100"
+                >
+                    <GithubIcon />
+                </Link>
+
+            </div>
+           
+
+        </header>
+    )
+
 }

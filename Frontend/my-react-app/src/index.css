@@ -31,6 +31,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  @apply flex h-screen flex-col;
+  /* @apply bg-black text-white; */
 }
 
 h1 {

@@ -5,6 +5,7 @@ const navigationItems = [
   { name: "Home", href: "/home" },
   { name: "Blog", href: "/blog" },
   { name: "About", href: "/about" },
+  { name: "Message", href: "/message" },
 ];
 
 function Navbar({ page }) {
