@@ -5,6 +5,7 @@ import RootLayout from "./components/Layout";
 import Header from "./components/Header";
 import Avatar from "./components/Avatar";
 import GithubIcon from "./icons/GithubIcon";
+import Index from "./pages/Index";
 
 export default function App() {
   return (
@@ -30,7 +31,7 @@ export default function App() {
           path="/blog"
           element={
             <RootLayout>
-              <Home />
+              <Index />
             </RootLayout>
           }
         />

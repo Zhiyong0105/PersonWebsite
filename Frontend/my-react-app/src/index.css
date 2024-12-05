@@ -58,7 +58,41 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+.text-title {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #2a2a72;
+  letter-spacing: 0.05em;
+}
+.text-subtitle {
+  font-size: 2rem; /* 副标题大小 */
+  font-weight: 500; /* 中等粗细 */
+  line-height: 1.5;
+  word-break: break-word; /* 长单词换行 */
+  max-width: 100%; /* 避免超出容器宽度 */
+  color: #4a4a4a;
+}
+.text-highlight {
+  font-size: 3rem;
+  font-weight: bold;
+  background: linear-gradient(to right, #00d8ff, #007acc);
+  -webkit-background-clip: text;
+  color: transparent;
+}
 
+.text-body {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  color: #4a4a4a;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

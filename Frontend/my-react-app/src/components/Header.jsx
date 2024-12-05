@@ -12,7 +12,7 @@ export default function Header() {
 
     return (
         <header className="grid w-full grid-flow-col grid-cols-3 sm:grid-cols-4">
-            <Avatar />
+            <Avatar page= {page}/>
             <Navbar page={page}/>
 
             <div className="flex items-center justify-end gap-2">
