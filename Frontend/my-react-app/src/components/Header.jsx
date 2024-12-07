@@ -3,7 +3,8 @@ import Navbar from "./Navbar";
 import GithubIcon from "../icons/GithubIcon"
 import { useLocation } from "react-router-dom"
 import { Link } from "react-router-dom";
-
+import User from "./User";
+import ThemeController from "./ThemeController";
 
 export default function Header() {
     const location = useLocation();
@@ -16,13 +17,14 @@ export default function Header() {
             <Navbar page={page}/>
 
             <div className="flex items-center justify-end gap-2">
-                <Link to={"https://github.com/Zhiyong0105"}
+                {/* <Link to={"https://github.com/Zhiyong0105"}
                     className="opacity-80 hover:opacity-100"
                 >
                     <GithubIcon />
-                </Link>
-
+                </Link> */}
+                <ThemeController />
             </div>
+            
            
 
         </header>

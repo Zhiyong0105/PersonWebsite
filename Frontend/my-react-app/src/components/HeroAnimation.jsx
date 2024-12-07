@@ -27,20 +27,21 @@ export default function HeroAnimation() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-    >
-      <motion.p
-        className="text-2xl tracking-widest md:text-4xl"
-        variants={itemVariants}
-      >
-        Hi, I'm
-      </motion.p>
-
-    <motion.strong
-    className="text-highlight" // 替换为渐变样式
+    > 
+    <motion.p
+    className="text-2xl md:text-4xl tracking-wide text-gray-600"
     variants={itemVariants}
-    >
+  >
+    Hi, I'm
+  </motion.p>
+
+  <motion.strong
+    className="text-transparent bg-gradient-to-r from-highlightStart to-highlightEnd bg-clip-text text-4xl font-extrabold tracking-wide"
+    variants={itemVariants}
+  >
     Abstract P
-    </motion.strong>
+  </motion.strong>
+
 
       <motion.div variants={itemVariants}>
         <TypeIntro />
