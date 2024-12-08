@@ -22,7 +22,7 @@ export default function Header() {
                 >
                     <GithubIcon />
                 </Link> */}
-                {/* <Login /> */}
+                <Login />
                 
                 <ThemeController />
             </div>
