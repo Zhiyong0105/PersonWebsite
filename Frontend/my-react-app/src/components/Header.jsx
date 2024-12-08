@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom"
 import { Link } from "react-router-dom";
 import User from "./User";
 import ThemeController from "./ThemeController";
-
+import Login from "./Login"
 export default function Header() {
     const location = useLocation();
     const pathname = location.pathname; // 获取路径名
@@ -22,6 +22,8 @@ export default function Header() {
                 >
                     <GithubIcon />
                 </Link> */}
+                {/* <Login /> */}
+                
                 <ThemeController />
             </div>
             
