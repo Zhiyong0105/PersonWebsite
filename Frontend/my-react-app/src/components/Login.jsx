@@ -98,13 +98,13 @@ export default function FloatingAuthModal() {
               <h2 className="text-xl font-bold mb-6 text-center">
                 {isRegister ? "注册" : "登录"}
               </h2>
-              <form className="w-4/5 flex flex-col items-center">
+              <div className="w-4/5 flex flex-col items-center">
                 {isRegister ? (
                   <Register toggleToLogin={toggleToLogin} />
                 ) : (
                   <SignIn toggleToRegister={toggleToRegister} />
                 )}
-              </form>
+              </div>
             </motion.div>
           </motion.div>
         </motion.div>
