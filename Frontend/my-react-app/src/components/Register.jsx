@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import CustomAlert from "./CustomAlert";
+// Register.jsx
+import React, { useState }from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Register({ toggleToLogin }) {
-  const [alert, setAlert] = useState({ show: false, message: "", type: "" });
+export default function Register  ({ toggleToLogin , setAlert, toggleToClose})  {
+  const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const formData = {
       username: event.target[0].value,
       password: event.target[1].value,
-      confirmPassword: event.target[2].value,
+      email: event.target[3].value,
     };
 
     try {
-      console.log("Sending request to backend:", formData); // 调试输出
+      console.log("Sending request to backend:", formData);
 
       const response = await fetch("http://localhost:8080/user/register", {
         method: "POST",
@@ -24,24 +24,25 @@ export default function Register({ toggleToLogin }) {
       });
 
       console.log("Response received:", response);
-      if(response.ok){
+
+      if (response.ok) {
         const result = await response.json();
-        const { code , data , msg } = result ;
-        if(code == 200){
-          setAlert({ show: true, message: msg, type: "success" });
-          // alert(msg);
-        }else{
-          alert("注册失败:"+ msg);
+        const { code, msg } = result;
+        if (code === 200) {
+          toggleToClose();
+          navigate("/");
+          
+        } else {
+          setAlert({ show: true, message: `注册失败: ${msg}`, type: "warning" });
         }
-      }else{
-        alert("请求失败"+response.status)
+      } else {
+        setAlert({ show: true, message: `请求失败: ${response.status}`, type: "error" });
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("网络错误：" + error.message);
+      setAlert({ show: true, message: `网络错误: ${error.message}`, type: "error" });
     }
   };
-
   return (
     <form className="w-4/5" onSubmit={handleSubmit}>
       <input
@@ -67,6 +68,7 @@ export default function Register({ toggleToLogin }) {
       <button
         type="submit"
         className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition duration-300"
+        // onClick={toggleToClose}
       >
         注册
       </button>
@@ -78,4 +80,4 @@ export default function Register({ toggleToLogin }) {
       </p>
     </form>
   );
-}
+};

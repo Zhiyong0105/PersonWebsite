@@ -2,9 +2,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SignIn from "./SignIn";
 import Register from "./Register";
+import CustomAlert from "./CustomAlert";
 export default function FloatingAuthModal() {
   const [isOpen, setIsOpen] = useState(false); // 控制模态框是否打开
   const [isRegister, setIsRegister] = useState(false); // 当前是否为注册状态
+  const [alert, setAlert] = useState({ show: false, message: "", type: "" });
+
 
   const toggleToLogin = () => {
     setIsRegister(false);
@@ -13,9 +16,11 @@ export default function FloatingAuthModal() {
   const toggleToRegister = () => {
     setIsRegister(true);
   };
-
+  const toggleToClose = () =>{
+    setIsOpen(false);
+  }
   return (
-    <div>
+    <div className="flex   ">
       {/* 打开模态框的按钮 */}
       <button
         className="btn btn-circle"
@@ -27,6 +32,7 @@ export default function FloatingAuthModal() {
         </div>
       </div>
       </button>
+
 
       {/* 模态框 */}
           <AnimatePresence>
@@ -45,6 +51,15 @@ export default function FloatingAuthModal() {
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
           >
+            {alert.show && (
+              <div className=" absolute top-4 left-1/2 transform -translate-x-1/2 z-50  p-4 ">
+                <CustomAlert
+                  message={alert.message}
+                  type={alert.type}
+                  onClose={() => setAlert({ show: false, message: "", type: "" })}
+                />
+              </div>
+            )}           
             {/* 关闭按钮 */}
             <button
               className="absolute top-4 right-4 z-50 btn btn-circle btn-outline btn-sm"
@@ -100,7 +115,7 @@ export default function FloatingAuthModal() {
               </h2>
               <div className="w-4/5 flex flex-col items-center">
                 {isRegister ? (
-                  <Register toggleToLogin={toggleToLogin} />
+                  <Register toggleToLogin={toggleToLogin} setAlert={setAlert} toggleToClose={toggleToClose}/>
                 ) : (
                   <SignIn toggleToRegister={toggleToRegister} />
                 )}
