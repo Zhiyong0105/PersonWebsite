@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SignIn from "./SignIn";
 import Register from "./Register";
 import CustomAlert from "./CustomAlert";
-export default function FloatingAuthModal() {
+export default function FloatingAuthModal({toggleToSwithUserButton}) {
   const [isOpen, setIsOpen] = useState(false); // 控制模态框是否打开
   const [isRegister, setIsRegister] = useState(false); // 当前是否为注册状态
   const [alert, setAlert] = useState({ show: false, message: "", type: "" });
@@ -23,12 +23,12 @@ export default function FloatingAuthModal() {
     <div className="flex   ">
       {/* 打开模态框的按钮 */}
       <button
-        className="btn btn-circle"
+        className="btn bg-transparent w-24"
         onClick={() => setIsOpen(true)}
       >
       <div className="avatar placeholder">
-        <div className="bg-neutral text-neutral-content w-12 rounded-full">
-          <span className="text-xl">AI</span>
+        <div className="  w-12 ">
+          <span className="text-slate-500 text-xl">登陆</span>
         </div>
       </div>
       </button>
@@ -117,7 +117,7 @@ export default function FloatingAuthModal() {
                 {isRegister ? (
                   <Register toggleToLogin={toggleToLogin} setAlert={setAlert} toggleToClose={toggleToClose}/>
                 ) : (
-                  <SignIn toggleToRegister={toggleToRegister} />
+                  <SignIn toggleToRegister={toggleToRegister} toggleToSwithUserButton={toggleToSwithUserButton} setAlert={setAlert}/>
                 )}
               </div>
             </motion.div>

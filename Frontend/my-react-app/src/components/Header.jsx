@@ -6,10 +6,16 @@ import { Link } from "react-router-dom";
 import User from "./User";
 import ThemeController from "./ThemeController";
 import Login from "./Login"
+import {useState} from "react"
+import UserButton from "./UserButton"
 export default function Header() {
     const location = useLocation();
+    const [isLogin,setIsLogin] = useState(false);
     const pathname = location.pathname; // 获取路径名
     const page = pathname.split("/").slice(0, 2).join("/") || "/";
+    const toggleToSwithUserButton =  () =>{
+        setIsLogin("true");
+    }
 
     return (
         <header className="grid w-full grid-flow-col grid-cols-3 sm:grid-cols-4">
@@ -22,7 +28,12 @@ export default function Header() {
                 >
                     <GithubIcon />
                 </Link> */}
-                <Login />
+                {isLogin ? (
+                     <UserButton />
+                ): (
+                    <Login toggleToSwithUserButton={toggleToSwithUserButton}/>
+                )}
+               
                 
                 <ThemeController />
             </div>
