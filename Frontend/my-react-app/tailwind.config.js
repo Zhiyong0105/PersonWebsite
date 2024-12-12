@@ -1,5 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{html,js,jsx}"],
+  
     daisyui: {
     themes: true, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
   },
@@ -11,5 +12,6 @@ module.exports = {
       },
     },
   },
+  
   plugins: [require('daisyui'),],
 }

@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import Avatar from "./components/Avatar";
 import GithubIcon from "./icons/GithubIcon";
 import Index from "./pages/Index";
+import ListArticle from "./components/ListArticle";
 
 export default function App() {
   return (
@@ -31,7 +32,7 @@ export default function App() {
           path="/blog"
           element={
             <RootLayout>
-              <Index />
+              <ListArticle />
             </RootLayout>
           }
         />
