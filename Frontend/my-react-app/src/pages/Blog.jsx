@@ -5,7 +5,7 @@ export default function Blog({ id, articleTitle, createTime }) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/${id}`); // 跳转到 /{article.id}
+    navigate(`/article/${id}`); // 跳转到 /{article.id}
   };
 
   return (
@@ -13,12 +13,12 @@ export default function Blog({ id, articleTitle, createTime }) {
       layoutId={`card-${id}`}
       onClick={handleCardClick}
       whileHover={{ scale: 1.05 }}
-      className=" relative w-full max-w-[40%] p-6 bg-base-100 shadow-lg rounded-lg cursor-pointer transition-transform hover:shadow-2xl"
+      className="relative w-full max-w-[100%] md:max-w-[100%] lg:max-w-[100%] bg-base-100 shadow-lg rounded-lg cursor-pointer transition-transform hover:shadow-2xl"
     >
       <motion.div
         layoutId={`title-${id}`}
         whileHover={{ color: "#d1d5db" }}
-        className=" text-lg font-bold text-white hover:underline"
+        className="text-lg font-bold text-blue-950 hover:underline"
       >
         {articleTitle}
       </motion.div>
@@ -31,3 +31,5 @@ export default function Blog({ id, articleTitle, createTime }) {
     </motion.div>
   );
 }
+
+
