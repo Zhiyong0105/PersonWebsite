@@ -48,7 +48,7 @@ export default function App() {
           path="/about"
           element={
             <RootLayout>
-              <Home />
+              <Index />
             </RootLayout>
           }
         />
