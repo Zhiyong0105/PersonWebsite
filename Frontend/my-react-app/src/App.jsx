@@ -7,7 +7,7 @@ import Avatar from "./components/Avatar";
 import GithubIcon from "./icons/GithubIcon";
 import Index from "./pages/Index";
 import ListArticle from "./components/ListArticle";
-
+import ShowArticleDetail from "./components/ShowArticleDetail"
 export default function App() {
   return (
     <Router>
@@ -52,6 +52,12 @@ export default function App() {
             </RootLayout>
           }
         />
+        <Route path="/article/:id" element={
+          <RootLayout>
+            <ShowArticleDetail />
+          </RootLayout>
+          
+          } />
       </Routes>
     </Router>
 

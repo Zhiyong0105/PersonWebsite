@@ -29,10 +29,10 @@ const handleListArticle = async () => {
 
   return (
 <div className="container mx-auto px-4 py-8 justify-center items-center">
-  <h1 className="text-3xl font-bold text-neutral-500 mb-6 ">
+  <h1 className="text-3xl font-bold mb-6 text-black-500 dark:text-white">
     最新文章
   </h1>
-  <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+  <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 justify-center items-center">
     <LazyMotion features={domAnimation}>
       {articles.map((article, index) => (
         <m.div
@@ -49,6 +49,7 @@ const handleListArticle = async () => {
             id={article.id}
             articleTitle={article.articleTitle}
             createTime={article.createTime}
+            articleSummary={article.articleSummary}
           />
         </m.div>
       ))}

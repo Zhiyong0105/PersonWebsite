@@ -7,12 +7,12 @@ import "katex/dist/katex.min.css"; // 导入 Katex 样式
 import axiosInstance from "./Axios";
 
 export default function Editor() {
-  const [value, setValue] = useState("$$E=mc^2$$");
+  const [value, setValue] = useState("");
 
   const saveArticle = async () => {
     try {
       const response = await axiosInstance.post("/article/auth/publish", {
-        articleTitle: "Sample Article", // 示例标题
+        articleTitle: "Sample Article1", // 示例标题
         articleContent: value,         // Markdown 内容
         status: 1                      // 示例状态
       });
