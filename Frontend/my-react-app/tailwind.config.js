@@ -1,6 +1,6 @@
 module.exports = {
   content: ["./src/**/*.{html,js,jsx}"],
-  
+    darkMode: 'class', 
     daisyui: {
     themes: true, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
   },
@@ -13,5 +13,5 @@ module.exports = {
     },
   },
   
-  plugins: [require('daisyui'),require("@tailwindcss/typography")],
+  plugins: [require('daisyui'),require("@tailwindcss/typography"),require('tailwindcss-important')],
 }

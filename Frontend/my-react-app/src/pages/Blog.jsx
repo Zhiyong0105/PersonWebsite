@@ -13,7 +13,7 @@ export default function Blog({ id, articleTitle, createTime,articleSummary }) {
       layoutId={`card-${id}`}
       onClick={handleCardClick}
       whileHover={{ scale: 1.05 }}
-      className="relative w-full max-w-[100%] md:max-w-[100%] lg:max-w-[100%] bg-base-100   rounded-lg cursor-pointer transition-transform hover:shadow-2xl"
+      className="relative w-full max-w-[100%] md:max-w-[100%] lg:max-w-[100%] bg-base-100  dark:text-white rounded-lg cursor-pointer transition-transform hover:shadow-2xl"
     >
       <motion.div
         layoutId={`title-${id}`}
@@ -25,7 +25,7 @@ export default function Blog({ id, articleTitle, createTime,articleSummary }) {
       <motion.div
         layoutId={`content-${id}`}
         whileHover={{ color: "#d1d5db" }}
-        className="text-gray-400 font-bold text-black-500 dark:text-white  hover:underline"
+        className=" font-bold text-black-500 dark:text-white  hover:underline"
       >
         {articleSummary}
       </motion.div>

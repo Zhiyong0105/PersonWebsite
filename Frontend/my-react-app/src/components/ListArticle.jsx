@@ -32,7 +32,7 @@ const handleListArticle = async () => {
   <h1 className="text-3xl font-bold mb-6 text-black-500 dark:text-white">
     最新文章
   </h1>
-  <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 justify-center items-center">
+  <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 justify-center items-cente dark:text-white">
     <LazyMotion features={domAnimation}>
       {articles.map((article, index) => (
         <m.div

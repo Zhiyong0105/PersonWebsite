@@ -11,7 +11,7 @@ export default function Editor() {
 
   const saveArticle = async () => {
     try {
-      const response = await axiosInstance.post("/article/auth/publish", {
+      const response = await axiosInstance.post("/article/publish", {
         articleTitle: "Sample Article1", // 示例标题
         articleContent: value,         // Markdown 内容
         status: 1                      // 示例状态
@@ -25,27 +25,25 @@ export default function Editor() {
       alert("Error saving article!");
     }
   };
-  return (
-    <div className="container" style={{ padding: "20px" }}>
-      {/* Markdown 编辑器 */}
-      <MDEditor
-        value={value}
-        onChange={setValue}
-        previewOptions={{
-          remarkPlugins: [remarkMath],
-          rehypePlugins: [rehypeKatex],
-        }}
-      />
-      {/* Markdown 渲染 */}
-      <MDEditor.Markdown
-        source={value}
-        style={{ whiteSpace: "pre-wrap" }}
-        remarkPlugins={[remarkMath]}
-        rehypePlugins={[rehypeKatex]}
-      />
-      <button className="btn" onClick={saveArticle}>
-        提交
-      </button>
+ return (
+    <div className="container" style={{ display: "flex", gap: "20px", padding: "20px" }}>
+      {/* 左侧 Markdown 编辑器 */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <h3>Markdown 编辑器</h3>
+        <MDEditor
+          value={value}
+          onChange={setValue}
+          previewOptions={{
+            remarkPlugins: [remarkMath],
+            rehypePlugins: [rehypeKatex],
+          }}
+        />
+        <button className="btn" style={{ marginTop: "10px" }} onClick={saveArticle}>
+          提交
+        </button>
+      </div>
+
+
     </div>
   );
 }
