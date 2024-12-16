@@ -43,7 +43,7 @@ const handleListArticle = async () => {
             delay: index * 0.2, // 动画逐个延迟
             duration: 0.5,     // 每个动画持续时间
           }}
-          className="flex justify-center"
+          className="flex-auto justify-center"
         >
           <Blog
             id={article.id}

@@ -48,7 +48,7 @@ export default function HeroAnimation() {
       </motion.div>
 
       <motion.p
-        className="text-2xl md:text-5xl tracking-widest"
+        className="text-2xl md:text-6xl tracking-wide"
         variants={itemVariants}
       >
         喜欢
@@ -57,12 +57,12 @@ export default function HeroAnimation() {
         <span className="ml-4">\owo/ ~</span>
       </motion.p>
 
-      <motion.p
-        className="text-2xl md:text-5xl tracking-widest"
-        variants={itemVariants}
-      >
-        我在这个网站记录我的成长，努力 💪 成为一个更好的程序员。
-      </motion.p>
+<motion.p
+  className="text-3xl md:text-4xl tracking-wide"
+  variants={itemVariants}
+>
+  我会在这个网站记录感兴趣的内容，努力成为一名合格的程序员
+</motion.p>
     </motion.div>
   );
 }

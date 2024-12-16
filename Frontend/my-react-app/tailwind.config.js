@@ -1,10 +1,11 @@
 module.exports = {
   content: ["./src/**/*.{html,js,jsx}"],
-    darkMode: 'class', 
     daisyui: {
     themes: true, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
   },
+  darkMode: 'class',
   theme: {
+    
     extend: {
       colors: {
         highlightStart: "#ff7eb3", // 渐变起始颜色
