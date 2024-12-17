@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Blog from "../pages/Blog";
 import axiosInstance from "./Axios";
 import { LazyMotion, domAnimation, m } from 'framer-motion';
+import SearchArticle from "./SearchArticle";
 
 export default function ListArticle() {
   const [articles, setArticles] = useState([]);
@@ -29,6 +30,8 @@ const handleListArticle = async () => {
 
   return (
 <div className="container mx-auto px-4 py-8 justify-center items-center">
+  {/* <SearchArticle /> */}
+  
   <h1 className="text-3xl font-bold mb-6 text-black-500 dark:text-white">
     最新文章
   </h1>

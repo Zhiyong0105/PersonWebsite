@@ -23,14 +23,14 @@ export default function FloatingAuthModal({toggleToSwithUserButton}) {
     <div className="flex   ">
       {/* 打开模态框的按钮 */}
       <button
-        className="btn bg-transparent w-24"
+        className="btn bg-transparent w-24 flex items-center justify-center space-x-2"
         onClick={() => setIsOpen(true)}
       >
-      <div className="avatar placeholder">
-        <div className="  w-12 ">
-          <span className="text-slate-500 text-xl">登陆</span>
+        <div className="flex justify-center items-center space-x-2">
+  <span className="text-slate-500 text-sm">Log in</span>
+  {/* <span aria-hidden="true" className="text-slate-500 text-sm">&rarr;</span> */}
         </div>
-      </div>
+
       </button>
 
 

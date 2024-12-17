@@ -21,4 +21,14 @@
   border-radius: 0.3rem; /* 圆角 */
 }
 
+.prose .toc a {
+  @apply text-blue-500 hover:text-blue-700;
+}
 
+.prose .toc ul {
+  @apply list-disc pl-6;
+}
+
+.prose .toc li {
+  @apply mb-2;
+}

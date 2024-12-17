@@ -8,6 +8,7 @@ import GithubIcon from "./icons/GithubIcon";
 import Index from "./pages/Index";
 import ListArticle from "./components/ListArticle";
 import ShowArticleDetail from "./components/ShowArticleDetail"
+import SidebarLayout from "./components/SidebarLayout";
 export default function App() {
   return (
     <Router>
@@ -47,9 +48,7 @@ export default function App() {
         <Route
           path="/about"
           element={
-            <RootLayout>
-              <Index />
-            </RootLayout>
+             <SidebarLayout />
           }
         />
         <Route path="/article/:id" element={

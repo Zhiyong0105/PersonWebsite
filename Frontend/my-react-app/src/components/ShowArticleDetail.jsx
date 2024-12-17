@@ -1,51 +1,3 @@
-// import { useParams } from 'react-router-dom';
-// import { useState, useEffect } from 'react';
-// import axiosInstance from "./Axios";
-// import MDEditor from "@uiw/react-md-editor";
-// import rehypeKatex from "rehype-katex";
-// import remarkMath from "remark-math";
-// import ReactMarkdown from 'react-markdown';
-// export default function ShowArticleDetail(){
-//     const { id } = useParams(); // 获取动态参数 :id
-//     const [article, setArticle] = useState(null);
-//     console.log(id);
-
-
-//       useEffect(() => {
-//     // 假设有一个 getArticleById 函数从后端获取文章数据
-//     const fetchArticle = async () => {
-//       const response = await axiosInstance.get(`/article/${id}`); 
-//       const {code,msg,data} = response.data;
-//       setArticle(data);
-     
-//     };
-//         fetchArticle();
-//   }, [id]);
-
-
-//   if (!article) {
-//     return <p>Article not found.</p>; 
-//   }
-
-//   return (
-//     <div className="container mx-auto px-4 py-8 dark:text-blue">
-//       <h1 className="text-3xl font-bold text-black mb-4">{article.articleTitle}</h1>
-//       <p className="text-gray-500">
-//         {article.createTime
-//           ? new Date(article.createTime).toLocaleString()
-//           : "Unknown"}
-//       </p>
-
-//   <div className=" prose dark:bg-gray-800 p-4 rounded">
-//     <ReactMarkdown
-//       children={article.articleContent}
-//       remarkPlugins={[remarkMath]}
-//       rehypePlugins={[rehypeKatex]}
-//     />
-//   </div>
-//     </div>
-//   );
-// };
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axiosInstance from "./Axios"; // 自定义的 Axios 实例
@@ -55,6 +7,8 @@ import remarkMath from "remark-math"; // 支持数学公式
 import rehypeKatex from "rehype-katex"; // 支持数学公式渲染
 import "highlight.js/styles/github.css"; // GitHub 风格的代码高亮
 import "katex/dist/katex.min.css"; // 数学公式样式
+import rehypeSlug from "rehype-slug";
+import rehypeToc from "@jsdevtools/rehype-toc";
 
 export default function ShowArticleDetail() {
   const { id } = useParams(); // 从路由中获取文章 ID
@@ -92,8 +46,8 @@ export default function ShowArticleDetail() {
     );
   }
 
-  return (
-    <div className="container mx-auto px-4 py-8 ">
+    return (
+    <div className="container mx-auto px-4 py-8">
       {/* 文章标题 */}
       <h1 className="text-3xl font-bold text-black dark:text-white mb-4">
         {article.articleTitle}
@@ -106,13 +60,24 @@ export default function ShowArticleDetail() {
           : "Unknown"}
       </p>
 
+      {/* 章节目录 */}
+      {/* <div className="mb-6 p-4 border rounded bg-gray-50 dark:bg-gray-800">
+        <h2 className="text-lg font-semibold mb-2">Table of Contents</h2>
+        <ReactMarkdown
+          children={article.articleContent}
+          rehypePlugins={[
+            rehypeSlug, // 给标题添加id
+            [rehypeToc, { headings: ["h1", "h2", "h3"] }], // 生成目录
+          ]}
+        />
+      </div> */}
+
       {/* 文章内容 */}
-      <div className="prose dark:prose-invert max-w-none   p-4 rounded shadow">
+      <div className="prose dark:prose-invert max-w-none p-4 rounded shadow">
         <ReactMarkdown
           children={article.articleContent}
           remarkPlugins={[remarkMath]}
           rehypePlugins={[rehypeKatex, rehypeHighlight]}
-          
         />
       </div>
     </div>
