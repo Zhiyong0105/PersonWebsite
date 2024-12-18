@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
 import TypeIntro from "./TypeIntro";
-
+import GithubIcon from "../icons/GithubIcon";
+import { FaGithub } from "react-icons/fa";
+import { FaBilibili } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 export default function HeroAnimation() {
   const containerVariants = {
     hidden: { opacity: 0 }, // 初始状态
@@ -23,7 +26,7 @@ export default function HeroAnimation() {
 
   return (
     <motion.div
-      className="flex min-h-full max-w-screen-md flex-col justify-center gap-5 px-6 md:px-10 2xl:max-w-7xl"
+      className="flex min-h-full max-w-screen-lg flex-col justify-center gap-5 px-6 md:px-10 2xl:max-w-7xl"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -58,11 +61,31 @@ export default function HeroAnimation() {
       </motion.p>
 
 <motion.p
-  className="text-3xl md:text-4xl tracking-wide"
+  className="text-3xl md:text-3xl tracking-wide text-gray-400"
   variants={itemVariants}
 >
   我会在这个网站记录感兴趣的内容，努力成为一名合格的程序员
+
 </motion.p>
+<motion.div 
+className="flex w-full items-center gap-3 px-2"
+variants={itemVariants}
+>
+<button className="btn-ghost btn-md rounded-md">
+  <a href="https://github.com/Zhiyong0105" target="_blank" rel="noopener noreferrer">
+    <FaGithub className="h-6 w-6" />
+  </a>
+</button>
+
+<button className="btn-ghost btn-md rounded-md">
+  <a href="https://space.bilibili.com/3101950" target="_blank" rel="noopener noreferrer">
+    <FaBilibili className="h-6 w-6" />
+  </a>
+</button>
+    
+
+</motion.div>
+
     </motion.div>
   );
 }

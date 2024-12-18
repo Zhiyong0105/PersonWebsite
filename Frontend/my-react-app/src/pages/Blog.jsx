@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { CiCalendar } from "react-icons/ci";
 
 export default function Blog({ id, articleTitle, createTime,articleSummary }) {
   const navigate = useNavigate();
+
 
   const handleCardClick = () => {
     navigate(`/article/${id}`); // 跳转到 /{article.id}
@@ -33,7 +35,19 @@ export default function Blog({ id, articleTitle, createTime,articleSummary }) {
         layoutId={`date-${id}`}
         className="text-sm text-gray-400 mt-2"
       >
-        {createTime ? new Date(createTime).toLocaleString() : "N/A"}
+<span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+  <CiCalendar />
+  {createTime
+    ? (() => {
+        const date = new Date(createTime);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+       return `${month}月${day}日, ${year}年`;
+      })()
+    : "N/A"}
+</span>
+                
       </motion.p>
     </motion.div>
   );

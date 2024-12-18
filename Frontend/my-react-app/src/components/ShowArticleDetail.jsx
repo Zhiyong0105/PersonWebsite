@@ -8,13 +8,18 @@ import rehypeKatex from "rehype-katex"; // 支持数学公式渲染
 import "highlight.js/styles/github.css"; // GitHub 风格的代码高亮
 import "katex/dist/katex.min.css"; // 数学公式样式
 import rehypeSlug from "rehype-slug";
-import rehypeToc from "@jsdevtools/rehype-toc";
+// import remarkToc from 'remark-toc';
+// import remarkGfm from "remark-gfm";
+import FloatingButton from "./FloatingButton";
+import MarkdownNavbar from 'markdown-navbar';
+import remarkGfm from "remark-gfm";
 
 export default function ShowArticleDetail() {
   const { id } = useParams(); // 从路由中获取文章 ID
   const [article, setArticle] = useState(null); // 存储文章内容
   const [loading, setLoading] = useState(true); // 加载状态
   const [error, setError] = useState(null); // 错误状态
+  const [showScrollTop, setShowScrollTop] = useState(false); // 控制回到顶部按钮显示
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -35,6 +40,11 @@ export default function ShowArticleDetail() {
 
     fetchArticle();
   }, [id]);
+    const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+
 
 
 
@@ -47,7 +57,15 @@ export default function ShowArticleDetail() {
   }
 
     return (
+      
     <div className="container mx-auto px-4 py-8">
+      {/* <div className="fixed top-20 right-10 w-64 hidden lg:block">
+        <MarkdownNavbar
+          source={article.articleContent} // Markdown 内容
+          ordered={false} // 是否显示有序列表
+          headingTopOffset={60} // 滚动时标题的偏移量
+        />
+      </div> */}
       {/* 文章标题 */}
       <h1 className="text-3xl font-bold text-black dark:text-white mb-4">
         {article.articleTitle}
@@ -76,10 +94,12 @@ export default function ShowArticleDetail() {
       <div className="prose dark:prose-invert max-w-none p-4 rounded shadow">
         <ReactMarkdown
           children={article.articleContent}
-          remarkPlugins={[remarkMath]}
+          remarkPlugins={[remarkMath,remarkGfm ]}
           rehypePlugins={[rehypeKatex, rehypeHighlight]}
         />
       </div>
+      <FloatingButton />
     </div>
+   
   );
 }
