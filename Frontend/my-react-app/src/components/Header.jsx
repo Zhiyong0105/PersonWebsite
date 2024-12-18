@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import User from "./User";
 import ThemeController from "./ThemeController";
 import Login from "./Login"
-import {useState} from "react"
+import {useState,useEffect} from "react"
 import UserButton from "./UserButton"
 export default function Header() {
     const location = useLocation();
@@ -16,6 +16,12 @@ export default function Header() {
     const toggleToSwithUserButton =  () =>{
         setIsLogin("true");
     }
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            setIsLogin(true);
+        }
+    }, []);
 
     return (
         <header className="grid w-full grid-flow-col grid-cols-3 sm:grid-cols-4">

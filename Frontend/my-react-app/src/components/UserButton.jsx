@@ -1,6 +1,6 @@
 
 import axiosInstance from "./Axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 export default function UserButton(){
     const navigation = useNavigate();
     const handleLogout = async () => {
@@ -31,7 +31,12 @@ export default function UserButton(){
         <div className="dropdown dropdown-end">
         <div tabIndex={0} role="button" className="btn bg-transparent w-24 h-12 text-slate-500 text-xl">User</div>
         <ul tabIndex={1} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-            <li><a>个人中心</a></li>
+            <li>
+              <Link to={"/admin"}>
+              个人中心
+              </Link>
+              
+              </li>
             <li><a onClick={handleLogout} >退出登陆</a></li>
         </ul>
         </div>        

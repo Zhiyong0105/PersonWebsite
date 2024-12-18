@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import ListArticle from "./components/ListArticle";
 import ShowArticleDetail from "./components/ShowArticleDetail"
 import SidebarLayout from "./components/SidebarLayout";
+import PrivateRoute from "./components/PrivateRoute";
 export default function App() {
   return (
     <Router>
@@ -48,7 +49,16 @@ export default function App() {
         <Route
           path="/about"
           element={
-             <SidebarLayout />
+             <Home />
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+                <SidebarLayout />
+            </PrivateRoute>
+             
           }
         />
         <Route path="/article/:id" element={
