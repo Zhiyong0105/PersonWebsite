@@ -85,12 +85,12 @@ export default function SignIn ({ toggleToRegister,setAlert,toggleToSwithUserBut
       >
         登录
       </button>
-      <p
+      {/* <p
         className="text-center text-sm mt-4 text-blue-500 cursor-pointer hover:underline"
         onClick={toggleToRegister}
       >
         没有账号？去注册
-      </p>
+      </p> */}
     </form>
   );
 };

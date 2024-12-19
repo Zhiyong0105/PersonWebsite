@@ -31,7 +31,7 @@ export default function App() {
           }
         />
         <Route
-          path="/blog"
+          path="/article"
           element={
             <RootLayout>
               <ListArticle />
@@ -49,7 +49,9 @@ export default function App() {
         <Route
           path="/about"
           element={
-             <Home />
+            <RootLayout>
+              <Home />
+            </RootLayout>
           }
         />
         <Route
