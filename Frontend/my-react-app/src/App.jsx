@@ -10,6 +10,7 @@ import ListArticle from "./components/ListArticle";
 import ShowArticleDetail from "./components/ShowArticleDetail"
 import SidebarLayout from "./components/SidebarLayout";
 import PrivateRoute from "./components/PrivateRoute";
+import Projects from "./components/Projects";
 export default function App() {
   return (
     <Router>
@@ -31,10 +32,10 @@ export default function App() {
           }
         />
         <Route
-          path="/article"
+          path="/project"
           element={
             <RootLayout>
-              <ListArticle />
+              <Projects />
             </RootLayout>
           }
         />
@@ -61,6 +62,14 @@ export default function App() {
                 <SidebarLayout />
             </PrivateRoute>
              
+          }
+        />
+        <Route
+          path="/article"
+          element={
+            <RootLayout>
+              <ListArticle />
+            </RootLayout>
           }
         />
         <Route path="/article/:id" element={

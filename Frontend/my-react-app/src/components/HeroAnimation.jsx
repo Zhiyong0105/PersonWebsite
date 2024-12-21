@@ -4,6 +4,8 @@ import GithubIcon from "../icons/GithubIcon";
 import { FaGithub } from "react-icons/fa";
 import { FaBilibili } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { BiLogoBlogger } from "react-icons/bi";
+
 export default function HeroAnimation() {
   const containerVariants = {
     hidden: { opacity: 0 }, // 初始状态
@@ -71,18 +73,46 @@ export default function HeroAnimation() {
 className="flex w-full items-center gap-3 px-2"
 variants={itemVariants}
 >
-<button className="btn-ghost btn-md rounded-md">
-  <a href="https://github.com/Zhiyong0105" target="_blank" rel="noopener noreferrer">
-    <FaGithub className="h-6 w-6" />
-  </a>
-</button>
+<div className="flex space-x-4">
+  <div className="relative group">
+    <button className="btn-ghost btn-md rounded-md">
+      <a href="https://github.com/Zhiyong0105" target="_blank" rel="noopener noreferrer">
+        <FaGithub className="h-6 w-6" />
+      </a>
+    </button>
+    <div
+      className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 bg-black text-white text-sm py-1 px-3 rounded opacity-0 group-hover:opacity-100 transition"
+    >
+      Github
+    </div>
+  </div>
 
-<button className="btn-ghost btn-md rounded-md">
-  <a href="https://space.bilibili.com/3101950" target="_blank" rel="noopener noreferrer">
-    <FaBilibili className="h-6 w-6" />
-  </a>
-</button>
-    
+  <div className="relative group">
+    <button className="btn-ghost btn-md rounded-md">
+      <a href="https://space.bilibili.com/3101950" target="_blank" rel="noopener noreferrer">
+        <FaBilibili className="h-6 w-6" />
+      </a>
+    </button>
+    <div
+      className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 bg-black text-white text-sm py-1 px-3 rounded opacity-0 group-hover:opacity-100 transition"
+    >
+      BiliBili
+    </div>
+  </div>
+
+  <div className="relative group">
+    <button className="btn-ghost btn-md rounded-md">
+      <a href="http://localhost:5173/article" target="_blank" rel="noopener noreferrer">
+        <BiLogoBlogger className="h-6 w-6" />
+      </a>
+    </button>
+    <div
+      className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 bg-black text-white text-sm py-1 px-3 rounded opacity-0 group-hover:opacity-100 transition"
+    >
+      Blog
+    </div>
+  </div>
+</div>   
 
 </motion.div>
 

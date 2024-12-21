@@ -5,7 +5,7 @@ import { IoIosArrowDown } from "react-icons/io";
 
 const navigationItems = [
   { name: "Home", href: "/home" },
-  { name: "Blog", href: "/article" },
+  { name: "Project", href: "/project" },
   { name: "About", href: "/about" },
   { name: "Message", href: "/message" },
 ];
