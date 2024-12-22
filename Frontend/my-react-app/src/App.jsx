@@ -11,6 +11,7 @@ import ShowArticleDetail from "./components/ShowArticleDetail"
 import SidebarLayout from "./components/SidebarLayout";
 import PrivateRoute from "./components/PrivateRoute";
 import Projects from "./components/Projects";
+import BlogLayout from "./components/BlogLayout";
 export default function App() {
   return (
     <Router>
@@ -67,15 +68,15 @@ export default function App() {
         <Route
           path="/article"
           element={
-            <RootLayout>
+            <BlogLayout>
               <ListArticle />
-            </RootLayout>
+            </BlogLayout>
           }
         />
         <Route path="/article/:id" element={
-          <RootLayout>
+          <BlogLayout>
             <ShowArticleDetail />
-          </RootLayout>
+          </BlogLayout>
           
           } />
       </Routes>
