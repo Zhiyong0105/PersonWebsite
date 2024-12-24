@@ -60,7 +60,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="h-ful w-full">
+    <div className="h-full min-h-[calc(100vh-2rem)]">
       <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col">
         {/* 顶部标题 */}
         <div className="px-4 lg:px-6 py-4 border-b border-base-200/80">
@@ -70,7 +70,7 @@ export default function Dashboard() {
 
         <div className="p-4 lg:p-6 space-y-6 flex-1 overflow-auto">
           {/* 统计卡片 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {stats.map((stat, index) => (
               <div key={index} className="bg-base-200/50 rounded-xl p-6">
                 <div className="flex items-start justify-between">
@@ -97,9 +97,9 @@ export default function Dashboard() {
           </div>
 
           {/* 图表区域 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
             {/* 访问趋势图 */}
-            <div className="bg-base-200/50 rounded-xl p-6">
+            <div className="bg-base-200/50 rounded-xl p-4 lg:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-medium">访问趋势</h3>
                 <select className="select select-bordered select-sm">
@@ -113,7 +113,7 @@ export default function Dashboard() {
             </div>
 
             {/* 文章分类统计 */}
-            <div className="bg-base-200/50 rounded-xl p-6">
+            <div className="bg-base-200/50 rounded-xl p-4 lg:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-medium">文章分类</h3>
                 <button className="btn btn-ghost btn-sm">
@@ -127,7 +127,7 @@ export default function Dashboard() {
           </div>
 
           {/* 最近文章 */}
-          <div className="bg-base-200/50 rounded-xl p-6">
+          <div className="bg-base-200/50 rounded-xl p-4 lg:p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-medium">最近文章</h3>
               <button className="btn btn-ghost btn-sm">
@@ -135,36 +135,38 @@ export default function Dashboard() {
               </button>
             </div>
             <div className="overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>文章标题</th>
-                    <th>发布时间</th>
-                    <th>浏览量</th>
-                    <th>评论数</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentArticles.map((article) => (
-                    <tr key={article.id}>
-                      <td className="font-medium">{article.title}</td>
-                      <td className="text-base-content/60">{article.publishDate}</td>
-                      <td>
-                        <div className="flex items-center gap-1">
-                          <EyeIcon className="w-4 h-4 text-base-content/40" />
-                          {article.views}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-1">
-                          <ChatBubbleLeftIcon className="w-4 h-4 text-base-content/40" />
-                          {article.comments}
-                        </div>
-                      </td>
+              <div className="min-w-[600px] lg:w-full">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>文章标题</th>
+                      <th>发布时间</th>
+                      <th>浏览量</th>
+                      <th>评论数</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {recentArticles.map((article) => (
+                      <tr key={article.id}>
+                        <td className="font-medium">{article.title}</td>
+                        <td className="text-base-content/60">{article.publishDate}</td>
+                        <td>
+                          <div className="flex items-center gap-1">
+                            <EyeIcon className="w-4 h-4 text-base-content/40" />
+                            {article.views}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1">
+                            <ChatBubbleLeftIcon className="w-4 h-4 text-base-content/40" />
+                            {article.comments}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

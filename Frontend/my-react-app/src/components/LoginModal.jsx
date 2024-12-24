@@ -13,7 +13,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(""); // 清除之前的错误
+    setError("");
 
     const formData = {
       username: event.target.email.value,
@@ -34,11 +34,30 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
       const { code, msg, data } = response.data;
 
       if (code === 200) {
-        const { token } = data;
-        localStorage.setItem("token", token);
-        onLogin?.(); // 通知父组件登录成功
-        onClose(); // 关闭模态框
-        navigate("/home"); // 导航到首页
+        // 测试用户权限判断
+        const isAdmin = formData.username === 'string1' && formData.password === '123456';
+        
+        const userInfo = {
+          ...data,
+          username: formData.username,
+          role: isAdmin ? 'admin' : 'guest', // 根据测试账号设置权限
+          email: `${formData.username}@example.com`
+        };
+
+        // 保存token
+        localStorage.setItem("token", data.token);
+        // 保存用户信息，包括角色
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        
+        onLogin?.();
+        onClose();
+        
+        // 根据角色重定向到不同页面
+        if (isAdmin) {
+          navigate("/admin"); // 管理员进入 Dashboard
+        } else {
+          navigate("/admin/user-center"); // 普通用户进入用户中心
+        }
       } else {
         setError(msg || "登录失败，请重试");
       }

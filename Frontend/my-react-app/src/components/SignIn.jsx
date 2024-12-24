@@ -37,7 +37,7 @@ export default function SignIn ({ toggleToRegister,setAlert,toggleToSwithUserBut
         // 登录成功后跳转
         toggleToSwithUserButton();
         // window.location.reload();
-        navigate("/home");
+        navigate("/article");
       } else {
         // 显示警告信息
         setAlert({ show: true, message: `登陆失败: ${msg}`, type: "warning" });

@@ -1,24 +1,76 @@
 import { HomeIcon, DocumentIcon, PencilSquareIcon, Bars3BottomLeftIcon, UserCircleIcon, UserGroupIcon, ChevronLeftIcon } from "@heroicons/react/24/solid";
-import { useNavigate, Link, Routes, Route } from "react-router-dom";
+import { useNavigate, Link, Routes, Route, Outlet } from "react-router-dom";
 import Editor from "./Editor";
 import ThemeController from "./ThemeController";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ArticleEditor from './ArticleEditor';
 import ArticleManager from './ArticleManager';
 import Dashboard from './Dashboard';
 import UserManager from './UserManager';
+
+const UserCenter = () => {
+  return (
+    <div className="h-full">
+      <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col">
+        <div className="px-4 lg:px-6 py-4 border-b border-base-200/80">
+          <h1 className="text-xl font-bold text-base-content">用户中心</h1>
+          <p className="text-sm text-base-content/60 mt-1">管理您的个人信息</p>
+        </div>
+        <div className="p-4 lg:p-6 flex-1">
+          <div className="space-y-6">
+            <div className="bg-base-200/50 rounded-lg p-6">
+              <h2 className="text-lg font-semibold mb-4">个人资料</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function SidebarLayout() {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [userRole, setUserRole] = useState('guest');
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    setUserRole(userInfo.role || 'guest');
+  }, []);
 
   const menuItems = [
-    { icon: HomeIcon, text: "首页", path: "/admin" },
-    { icon: DocumentIcon, text: "文章管理", path: "/admin/articles" },
-    { icon: PencilSquareIcon, text: "写文章", path: "/admin/editor" },
-    { icon: UserGroupIcon, text: "用户管理", path: "/admin/users" },
+    { 
+      icon: HomeIcon, 
+      text: "Dashboard",
+      path: "/admin",
+      requiredRole: 'admin'
+    },
+    { 
+      icon: UserCircleIcon,
+      text: "用户中心",
+      path: "/admin/user-center",
+      requiredRole: 'guest'
+    },
+    { 
+      icon: DocumentIcon, 
+      text: "文章管理", 
+      path: "/admin/articles",
+      requiredRole: 'admin'
+    },
+    { 
+      icon: PencilSquareIcon, 
+      text: "写文章", 
+      path: "/admin/editor",
+      requiredRole: 'admin'
+    },
+    { 
+      icon: UserGroupIcon, 
+      text: "用户管理", 
+      path: "/admin/users",
+      requiredRole: 'admin'
+    },
   ];
 
   const UserSection = () => (
@@ -46,9 +98,50 @@ export default function SidebarLayout() {
     </div>
   );
 
+  const handleNavigation = () => {
+    if (window.innerWidth < 1024) {
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  const renderMenuItem = (item) => {
+    const isDisabled = item.requiredRole === 'admin' && userRole !== 'admin';
+    
+    return (
+      <Link
+        key={item.path}
+        to={isDisabled ? '#' : item.path}
+        onClick={(e) => {
+          if (isDisabled) {
+            e.preventDefault();
+            alert('您没有权限访问此功能');
+            return;
+          }
+          handleNavigation();
+        }}
+        className={`
+          flex items-center gap-3 px-4 py-3
+          ${isDisabled 
+            ? 'text-base-content/30 cursor-not-allowed' 
+            : 'text-base-content/70 hover:bg-base-200/70 hover:shadow-sm'
+          }
+          rounded-lg transition-all duration-200 
+          group w-full
+        `}
+      >
+        <item.icon className={`h-5 w-5 shrink-0 ${!isDisabled && 'group-hover:text-primary'}`} />
+        {!isSidebarCollapsed && (
+          <span className={`font-medium truncate ${!isDisabled && 'group-hover:text-primary'}`}>
+            {item.text}
+          </span>
+        )}
+      </Link>
+    );
+  };
+
   return (
-    <div className="h-full bg-base-200">
-      {/* 移动端顶栏 - 调整高度和固定定位 */}
+    <div className="min-h-screen bg-base-200">
+      {/* 移动端顶栏 */}
       <div className="lg:hidden flex items-center h-16 px-4 border-b bg-base-100 fixed top-0 left-0 right-0 z-40">
         <button 
           className="btn btn-ghost btn-sm"
@@ -73,8 +166,8 @@ export default function SidebarLayout() {
         </div>
       </div>
 
-      <div className="flex h-full">
-        {/* 侧边栏 - 调整移动端位置 */}
+      <div className="flex min-h-screen">
+        {/* 侧边栏 */}
         <aside className={`
           ${isSidebarCollapsed ? 'w-20' : 'w-72'} 
           lg:block fixed lg:static inset-y-0 left-0 z-50
@@ -102,21 +195,9 @@ export default function SidebarLayout() {
             </div>
 
             {/* 导航菜单 */}
-            <nav className="flex h-full px-4 py-6">
+            <nav className="flex-1 px-4 py-6">
               <div className="space-y-1.5">
-                {menuItems.map((item, index) => (
-                  <Link
-                    key={index}
-                    to={item.path}
-                    className="flex items-center gap-3 px-4 py-3 text-base-content/70 hover:bg-base-200/70 
-                             rounded-lg transition-all duration-200 group"
-                  >
-                    <item.icon className="h-5 w-5 group-hover:text-primary transition-colors" />
-                    {!isSidebarCollapsed && (
-                      <span className="font-medium group-hover:text-primary transition-colors">{item.text}</span>
-                    )}
-                  </Link>
-                ))}
+                {menuItems.map(renderMenuItem)}
               </div>
             </nav>
 
@@ -145,7 +226,7 @@ export default function SidebarLayout() {
           </div>
         </aside>
 
-        {/* 遮罩层 - 调整z-index */}
+        {/* 遮罩层 */}
         {isMobileMenuOpen && (
           <div 
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
@@ -153,19 +234,16 @@ export default function SidebarLayout() {
           />
         )}
 
-        {/* 主内容区 - 添加移动端顶部间距 */}
+        {/* 主内容区 */}
         <main className={`
-          flex-1 min-h-screen transition-all duration-300
-          ${isSidebarCollapsed ? 'lg:pl-10' : 'lg:pl-15'}
+          flex-1 transition-all duration-300
+          ${isSidebarCollapsed ? 'lg:pl-5' : 'lg:pl-3'}
           lg:pt-0 pt-16 w-full
         `}>
-          <div className="h-full  lg:p-6 w-full">
-            <Routes>
-              <Route path="/editor" element={<ArticleEditor />} />
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/articles" element={<ArticleManager />} />
-              <Route path="/users" element={<UserManager />} />
-            </Routes>
+          <div className="h-[calc(100vh-4rem)] lg:h-screen overflow-auto p-4 lg:p-6">
+            <div className="h-full max-w-[1600px] mx-auto">
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>

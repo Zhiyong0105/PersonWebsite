@@ -5,9 +5,9 @@ export default function ArticleEditor() {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
 
   return (
-    <div className="h-full">
-      {/* 顶部操作栏 */}
-      <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col w-full">
+    <div className="h-full min-h-[calc(100vh-2rem)]">
+      <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col">
+        {/* 顶部操作栏 */}
         <div className="px-4 lg:px-6 py-4 border-b border-base-200/80 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
@@ -26,22 +26,23 @@ export default function ArticleEditor() {
         </div>
 
         {/* 编辑器和设置区域 */}
-        <div className="flex-1 h-full">
-          <div className="h-full flex gap-6">
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full flex lg:flex-row flex-col gap-4 lg:gap-6">
             {/* 主编辑区域 */}
-            <div className="flex-1 p-4 lg:p-6 ">
-              <div className="bg-base-200/50 h-full rounded-lg">
+            <div className="flex-1 p-4 lg:p-6 overflow-auto">
+              <div className="bg-base-200/50 rounded-lg h-auto min-h-full">
                 <Editor />
               </div>
             </div>
 
-            {/* 侧边设置面板 - 移动端可折叠 */}
+            {/* 侧边设置面板 */}
             <div className={`
-              w-80 bg-base-100 p-4 flex-shrink-0
-              fixed lg:relative right-0 top-[64px] lg:top-0 h-[calc(100vh-64px)] lg:h-auto
+              lg:w-80 w-full bg-base-100 p-4
+              lg:relative fixed bottom-0 left-0 right-0
               transform transition-transform duration-300
-              ${isSettingsPanelOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
-              z-20 lg:z-0 shadow-sm
+              ${isSettingsPanelOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}
+              z-20 lg:z-0 shadow-lg lg:shadow-none
+              overflow-y-auto
             `}>
               {/* 移动端折叠按钮 */}
               <button 
@@ -94,7 +95,7 @@ export default function ArticleEditor() {
                       <input 
                         type="text" 
                         className="input input-bordered input-sm" 
-                        placeholder="输入标签，用逗号分隔"
+                        placeholder="输入标签，用逗���分隔"
                       />
                     </div>
                   </div>

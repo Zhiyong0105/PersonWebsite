@@ -1,8 +1,11 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from 'react-router-dom';
 
 export default function PrivateRoute({ children }) {
-    const token = localStorage.getItem("token"); // 检查是否存在 Token
-    return token ? children : <Navigate to="/" replace />; // 如果没有 Token，跳转到登录页面
+  const token = localStorage.getItem('token');
 
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
 
+  return children || <Outlet />;
 }
