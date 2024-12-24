@@ -12,6 +12,8 @@ import SidebarLayout from "./components/SidebarLayout";
 import PrivateRoute from "./components/PrivateRoute";
 import Projects from "./components/Projects";
 import BlogLayout from "./components/BlogLayout";
+import About from "./components/About";
+
 export default function App() {
   return (
     <Router>
@@ -52,17 +54,16 @@ export default function App() {
           path="/about"
           element={
             <RootLayout>
-              <Home />
+              <About />
             </RootLayout>
           }
         />
         <Route
-          path="/admin"
+          path="/admin/*"
           element={
             <PrivateRoute>
-                <SidebarLayout />
+              <SidebarLayout />
             </PrivateRoute>
-             
           }
         />
         <Route
@@ -77,12 +78,8 @@ export default function App() {
           <BlogLayout>
             <ShowArticleDetail />
           </BlogLayout>
-          
-          } />
+        } />
       </Routes>
     </Router>
-
-
-    // <Header />
   );
 }

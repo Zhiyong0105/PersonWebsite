@@ -32,3 +32,57 @@
 .prose .toc li {
   @apply mb-2;
 }
+
+/* TOC 导航样式 */
+.toc-nav {
+  position: relative;
+}
+
+.toc-nav::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--fallback-b2, oklch(var(--b2)));
+  opacity: 0.3;
+}
+
+.toc-nav a {
+  position: relative;
+  display: block;
+  padding-left: 1.5rem;
+}
+
+.toc-nav a::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fallback-p, oklch(var(--p)));
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.2s ease;
+}
+
+.toc-nav a.active::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* 滚动条样式 */
+.toc-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toc-nav::-webkit-scrollbar-track {
+  background: var(--fallback-b2, oklch(var(--b2)));
+  border-radius: 2px;
+}
+
+.toc-nav::-webkit-scrollbar-thumb {
+  background: var(--fallback-p, oklch(var(--p)));
+  border-radius: 2px;
+}

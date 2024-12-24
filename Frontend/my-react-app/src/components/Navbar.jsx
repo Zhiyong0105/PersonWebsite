@@ -2,6 +2,8 @@ import { Link,useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import MobileMenu from "./MobileMenu"
 import { IoIosArrowDown } from "react-icons/io";
+import LoginModal from './LoginModal';
+import { useState } from "react";
 
 const navigationItems = [
   { name: "Home", href: "/home" },
@@ -12,6 +14,7 @@ const navigationItems = [
 
 const Navbar = ({ page }) => {
 const location = useLocation();
+const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
 const isSelected = (href) => page === href;
 
@@ -55,33 +58,39 @@ const NavItem = ({ item }) => {
   };
 
   return (
-    <div className="flex justify-center items-center col-span-2 mt-0.5  sm:flex h-14">
-      <ul className=" items-center justify-center bg-gray-300/65  rounded-full hidden sm:flex px-2 py-1 space-x-4">
-        {navigationItems.map((item) => (
-          <NavItem key={item.name} item={item} />
-        ))}
-      </ul>
-    <div className="flex items-center justify-center sm:hidden">
-        {/* <MobileMenu /> */}
-    <details className="dropdown">
-      <summary className="btn btn-md btn-ghost flex items-center justify-between">
-        Menu
-        <IoIosArrowDown className="h-6 w-6 ml-2" />
-      </summary>
-      <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-        {navigationItems.map((item) => (
-          <li key={item.href}>
-            <a href={item.href} className="hover:bg-gray-100 rounded-md">
-              {item.name}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </details>
+    <>
+      <div className="flex justify-center items-center col-span-2 mt-0.5  sm:flex h-14">
+        <ul className=" items-center justify-center bg-gray-300/65  rounded-full hidden sm:flex px-2 py-1 space-x-4 test-base-contant">
+          {navigationItems.map((item) => (
+            <NavItem key={item.name} item={item} />
+          ))}
+        </ul>
+        <div className="flex items-center justify-center sm:hidden">
+            {/* <MobileMenu /> */}
+        <details className="dropdown">
+          <summary className="btn btn-md btn-ghost flex items-center justify-between">
+            Menu
+            <IoIosArrowDown className="h-6 w-6 ml-2" />
+          </summary>
+          <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+            {navigationItems.map((item) => (
+              <li key={item.href}>
+                <a href={item.href} className="hover:bg-gray-100 rounded-md">
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+        </div>
+
       </div>
-    </div>
 
-
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
+    </>
   );
 };
 
