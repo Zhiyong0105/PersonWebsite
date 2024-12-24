@@ -7,7 +7,7 @@ export default function ArticleEditor() {
   return (
     <div className="h-full">
       {/* 顶部操作栏 */}
-      <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col">
+      <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col w-full">
         <div className="px-4 lg:px-6 py-4 border-b border-base-200/80 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
@@ -26,11 +26,11 @@ export default function ArticleEditor() {
         </div>
 
         {/* 编辑器和设置区域 */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 h-full">
           <div className="h-full flex gap-6">
             {/* 主编辑区域 */}
-            <div className="flex-1 p-4 lg:p-6">
-              <div className="bg-base-200/50 rounded-lg">
+            <div className="flex-1 p-4 lg:p-6 ">
+              <div className="bg-base-200/50 h-full rounded-lg">
                 <Editor />
               </div>
             </div>

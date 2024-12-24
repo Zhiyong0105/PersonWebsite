@@ -60,7 +60,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="h-full">
+    <div className="h-ful w-full">
       <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col">
         {/* 顶部标题 */}
         <div className="px-4 lg:px-6 py-4 border-b border-base-200/80">

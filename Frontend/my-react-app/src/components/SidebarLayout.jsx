@@ -47,7 +47,7 @@ export default function SidebarLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="h-full bg-base-200">
       {/* 移动端顶栏 - 调整高度和固定定位 */}
       <div className="lg:hidden flex items-center h-16 px-4 border-b bg-base-100 fixed top-0 left-0 right-0 z-40">
         <button 
@@ -73,7 +73,7 @@ export default function SidebarLayout() {
         </div>
       </div>
 
-      <div className="flex min-h-screen">
+      <div className="flex h-full">
         {/* 侧边栏 - 调整移动端位置 */}
         <aside className={`
           ${isSidebarCollapsed ? 'w-20' : 'w-72'} 
@@ -102,7 +102,7 @@ export default function SidebarLayout() {
             </div>
 
             {/* 导航菜单 */}
-            <nav className="flex-1 overflow-y-auto px-4 py-6">
+            <nav className="flex h-full px-4 py-6">
               <div className="space-y-1.5">
                 {menuItems.map((item, index) => (
                   <Link
@@ -156,7 +156,7 @@ export default function SidebarLayout() {
         {/* 主内容区 - 添加移动端顶部间距 */}
         <main className={`
           flex-1 min-h-screen transition-all duration-300
-          ${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}
+          ${isSidebarCollapsed ? 'lg:pl-10' : 'lg:pl-15'}
           lg:pt-0 pt-16 w-full
         `}>
           <div className="h-full  lg:p-6 w-full">
