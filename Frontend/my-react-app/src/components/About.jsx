@@ -10,7 +10,6 @@ import {
 
 const About = () => {
   const skillsRef = useRef(null);
-  const timelineRef = useRef(null);
 
   // 技能标签数据 - 分类
   const skills = {
@@ -25,31 +24,6 @@ const About = () => {
       skills: ["Python", "Node.js", "Docker", "MySQL", "MongoDB", "Redis", "Git"]
     }
   };
-
-  // 经历时间轴数据
-  const experiences = [
-    {
-      year: "2023",
-      title: "Senior Developer",
-      company: "Tech Company",
-      description: "负责开发和维护核心业务系统",
-      icon: <FaLaptopCode />
-    },
-    {
-      year: "2021",
-      title: "Full Stack Developer",
-      company: "Start-up",
-      description: "全栈开发，负责前后端开发工作",
-      icon: <FaBriefcase />
-    },
-    {
-      year: "2019",
-      title: "Junior Developer",
-      company: "IT Company",
-      description: "参与多个Web应用开发项目",
-      icon: <FaGraduationCap />
-    }
-  ];
 
   useEffect(() => {
     // 添加必要的CSS
@@ -76,7 +50,6 @@ const About = () => {
     }, observerOptions);
 
     if (skillsRef.current) observer.observe(skillsRef.current);
-    if (timelineRef.current) observer.observe(timelineRef.current);
 
     return () => {
       observer.disconnect();
@@ -131,65 +104,6 @@ const About = () => {
                 </div>
               </motion.div>
             ))}
-          </div>
-        </div>
-
-        {/* 经历时间轴部分 */}
-        <div 
-          ref={timelineRef} 
-          className="opacity-0 transform translate-y-10 transition-all duration-1000 ease-out text-center"
-        >
-          <h2 className="text-2xl font-semibold mb-12 text-base-content">工作经历</h2>
-          <div className="relative max-w-4xl mx-auto">
-            {experiences.map((exp, index) => (
-              <motion.div
-                key={exp.year}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: index * 0.2,
-                  ease: [0.6, -0.05, 0.01, 0.99]
-                }}
-                className={`flex items-center relative ${
-                  index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                } mb-16`}
-              >
-                {/* 时间点图标 - 移到主轴上 */}
-                <div className="absolute left-1/2 -translate-x-1/2 z-10">
-                  <div className="w-12 h-12 bg-base-100 rounded-full border-4 border-base-200
-                                flex items-center justify-center shadow-lg
-                                text-primary text-xl">
-                    {exp.icon}
-                  </div>
-                </div>
-
-                {/* 内容卡片 */}
-                <div className={`w-5/12 ${index % 2 === 0 ? 'pr-8' : 'pl-8'}`}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="bg-base-200 p-6 rounded-lg shadow-md 
-                              hover:shadow-xl transition-all duration-300"
-                  >
-                    <h3 className="text-xl font-bold text-base-content">{exp.year}</h3>
-                    <h4 className="text-lg font-semibold mt-2 text-base-content">{exp.title}</h4>
-                    <p className="text-base-content/60">{exp.company}</p>
-                    <p className="mt-3 text-base-content">{exp.description}</p>
-                  </motion.div>
-                </div>
-
-                {/* 空白区域，保持布局平衡 */}
-                <div className="w-5/12" />
-              </motion.div>
-            ))}
-
-            {/* 时间轴竖线 */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-base-200
-                          transform -translate-x-1/2"></div>
           </div>
         </div>
       </div>

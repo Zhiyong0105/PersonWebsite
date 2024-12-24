@@ -27,7 +27,7 @@ export default function BlogHeader({ onLoginClick }) {
             <div className="flex items-center gap-2 flex-shrink-0">
                 <HiOutlineEmojiHappy className="h-6 w-6" />
                 <div className="hidden h-6 items-center text-2xl font-semibold leading-6 sm:block">
-                    <Link to={"/"}>AbstractP.dev</Link>
+                    <Link to={"/article"}>AbstractP.dev</Link>
                 </div>
             </div>
 

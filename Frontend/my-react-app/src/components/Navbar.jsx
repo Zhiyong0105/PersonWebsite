@@ -9,7 +9,7 @@ const navigationItems = [
   { name: "Home", href: "/home" },
   { name: "Project", href: "/project" },
   { name: "About", href: "/about" },
-  { name: "Message", href: "/message" },
+  { name: "Experience", href: "/experience" },
 ];
 
 const Navbar = ({ page }) => {
