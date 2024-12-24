@@ -1,50 +1,17 @@
-import { useState,useEffect } from "react";
+import { IoArrowUp } from "react-icons/io5";
 
-import { FaArrowUp } from "react-icons/fa6";
-import { BiSolidCommentDetail } from "react-icons/bi";
-
-export default function FloatingButton(){
-    const [showScrollTop, setShowScrollTop] = useState(false); // 控制回到顶部按钮显示
-    const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+export default function FloatingButton() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 200); // 滚动超过200px时显示按钮
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  return(
-    <div
-        className=" fixed bottom-4 right-8  flex-col space-y-4 hidden md:flex"
+
+  return (
+    <div 
+      onClick={scrollToTop}
+      className="w-8 h-8 flex items-center justify-center text-base-content/70 
+                hover:text-primary transition-colors cursor-pointer"
     >
-
-    <button
-    onClick={scrollToTop}
-    className="btn-circle btn-sm btn"
-    style={{
-      opacity: showScrollTop ? 1 : 0,
-      transform: showScrollTop ? 'scale(1)' : 'scale(0.8)',
-    }}
-  >
-    <BiSolidCommentDetail className="h-6 w-6"/>
-  </button>
-  <button
-    onClick={scrollToTop}
-    className="btn-circle btn-sm btn"
-    style={{
-      opacity: showScrollTop ? 1 : 0,
-      transform: showScrollTop ? 'scale(1)' : 'scale(0.8)',
-    }}
-  >
-    <FaArrowUp className="h-6 w-6"/>
-  </button>
-
-
-        
-
+      <IoArrowUp className="w-5 h-5" />
     </div>
-
-  )
+  );
 }

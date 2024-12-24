@@ -8,46 +8,29 @@ import ThemeController from "./ThemeController";
 import Login from "./Login"
 import {useState,useEffect} from "react"
 import UserButton from "./UserButton"
-export default function Header() {
-    const location = useLocation();
-    const [isLogin,setIsLogin] = useState(false);
-    const pathname = location.pathname; // 获取路径名
-    const page = pathname.split("/").slice(0, 2).join("/") || "/";
-    const toggleToSwithUserButton =  () =>{
-        setIsLogin("true");
-    }
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            setIsLogin(true);
-        }
-    }, []);
+
+const Header = ({ onSectionClick }) => {
+    const [page, setPage] = useState("/home");
 
     return (
-        <header className="grid w-full grid-flow-col grid-cols-3 sm:grid-cols-4">
-            <Avatar page= {page}/>
-            <Navbar page={page}/>
+        <header className="fixed top-0 left-0 right-0 z-50 bg-base-100/80 backdrop-blur-sm">
+            <div className="container mx-auto">
+                <div className="navbar">
+                    <div className="navbar-start">
+                        <Avatar page={page} />
+                    </div>
+                    
+                    <div className="navbar-center">
+                        <Navbar page={page} onSectionClick={onSectionClick} />
+                    </div>
 
-            <div className="flex items-center justify-end gap-2">
-                {/* <Link to={"https://github.com/Zhiyong0105"}
-                    className="opacity-80 hover:opacity-100"
-                >
-                    <GithubIcon />
-                </Link> */}
-                {/* {isLogin ? (
-                     <UserButton />
-                ): (
-                    <Login toggleToSwithUserButton={toggleToSwithUserButton}/>
-                )}
-                */}
-                    <ThemeController/>
-
-               
+                    <div className="navbar-end">
+                        <ThemeController />
+                    </div>
+                </div>
             </div>
-            
-           
-
         </header>
-    )
+    );
+};
 
-}
+export default Header;

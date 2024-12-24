@@ -1,78 +1,24 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
-import RootLayout from "./components/Layout";
-import Header from "./components/Header";
-import Avatar from "./components/Avatar";
-import GithubIcon from "./icons/GithubIcon";
-import Index from "./pages/Index";
+import BlogLayout from "./components/BlogLayout";
 import ListArticle from "./components/ListArticle";
-import ShowArticleDetail from "./components/ShowArticleDetail"
+import ShowArticleDetail from "./components/ShowArticleDetail";
 import SidebarLayout from "./components/SidebarLayout";
 import PrivateRoute from "./components/PrivateRoute";
-import Projects from "./components/Projects";
-import BlogLayout from "./components/BlogLayout";
-import About from "./components/About";
 import PrivateElement from './components/PrivateElement';
 import Dashboard from "./components/Dashboard";
 import ArticleManager from "./components/ArticleManager";
 import ArticleEditor from "./components/ArticleEditor";
 import UserManager from "./components/UserManager";
 import UserCenter from './components/UserCenter';
-import Experience from "./components/Experience";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <RootLayout>
-              <Home />
-            </RootLayout>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <RootLayout>
-              <Home />
-            </RootLayout>
-          }
-        />
-        <Route
-          path="/project"
-          element={
-            <RootLayout>
-              <Projects />
-            </RootLayout>
-          }
-        />
-        <Route
-          path="/message"
-          element={
-            <RootLayout>
-              <Home />
-            </RootLayout>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <RootLayout>
-              <About />
-            </RootLayout>
-          }
-        />
-        <Route
-          path="/admin/*"
-          element={
-            <PrivateRoute>
-              <SidebarLayout />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/" element={<Home />} />
+        
         <Route
           path="/article"
           element={
@@ -81,11 +27,15 @@ export default function App() {
             </BlogLayout>
           }
         />
-        <Route path="/article/:id" element={
-          <BlogLayout>
-            <ShowArticleDetail />
-          </BlogLayout>
-        } />
+        <Route 
+          path="/article/:id" 
+          element={
+            <BlogLayout>
+              <ShowArticleDetail />
+            </BlogLayout>
+          } 
+        />
+
         <Route path="/admin/*" element={<PrivateRoute><SidebarLayout /></PrivateRoute>}>
           <Route index element={
             <PrivateElement element={<Dashboard />} requiredRole="admin" />
@@ -104,14 +54,11 @@ export default function App() {
             element={<PrivateElement element={<UserManager />} requiredRole="admin" />} 
           />
         </Route>
-        <Route
-          path="/experience"
-          element={
-            <RootLayout>
-              <Experience />
-            </RootLayout>
-          }
-        />
+
+        <Route path="/home" element={<Navigate to="/" replace />} />
+        <Route path="/project" element={<Navigate to="/#project" replace />} />
+        <Route path="/about" element={<Navigate to="/#about" replace />} />
+        <Route path="/experience" element={<Navigate to="/#experience" replace />} />
       </Routes>
     </Router>
   );

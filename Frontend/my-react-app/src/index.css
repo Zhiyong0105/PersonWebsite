@@ -86,3 +86,27 @@
   background: var(--fallback-p, oklch(var(--p)));
   border-radius: 2px;
 }
+
+/* TOC 滚动条样式 */
+.toc-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--primary-rgb), 0.3) transparent;
+}
+
+.toc-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toc-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--primary-rgb), 0.3);
+  border-radius: 20px;
+}
+
+/* 添加平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
