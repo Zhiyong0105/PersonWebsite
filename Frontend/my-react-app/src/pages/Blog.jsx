@@ -2,54 +2,36 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { CiCalendar } from "react-icons/ci";
 
-export default function Blog({ id, articleTitle, createTime,articleSummary }) {
+export default function Blog({ id, articleTitle, createTime, articleSummary, className = "" }) {
   const navigate = useNavigate();
 
-
-  const handleCardClick = () => {
-    navigate(`/article/${id}`); // 跳转到 /{article.id}
+  // 格式化日期
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${month}月${day}日, ${year}年`;
   };
 
   return (
-    <motion.div
-      layoutId={`card-${id}`}
-      onClick={handleCardClick}
-      whileHover={{ scale: 1.05 }}
-      className="relative w-full max-w-[100%] md:max-w-[100%] lg:max-w-[100%] bg-base-100  dark:text-white rounded-lg cursor-pointer transition-transform hover:shadow-2xl"
+    <div 
+      onClick={() => navigate(`/article/${id}`)}
+      className={`cursor-pointer p-8 ${className}`}
     >
-      <motion.div
-        layoutId={`title-${id}`}
-        whileHover={{ color: "#d1d5db" }}
-        className="text-lg font-bold text-black-500 dark:text-white  hover:underline"
-      >
+      <h2 className="text-2xl font-semibold mb-3 line-clamp-2 
+                     text-base-content transition-colors duration-300
+                     group-hover:text-primary">
         {articleTitle}
-      </motion.div>
-      <motion.div
-        layoutId={`content-${id}`}
-        whileHover={{ color: "#d1d5db" }}
-        className=" font-bold text-black-500 dark:text-white  hover:underline"
-      >
+      </h2>
+      <div className="flex items-center gap-2 text-base-content/60 text-sm mb-4">
+        <CiCalendar className="w-4 h-4" />
+        <span>{formatDate(createTime)}</span>
+      </div>
+      <p className="text-base-content/80 text-base line-clamp-3">
         {articleSummary}
-      </motion.div>
-      <motion.p
-        layoutId={`date-${id}`}
-        className="text-sm text-gray-400 mt-2"
-      >
-<span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-  <CiCalendar />
-  {createTime
-    ? (() => {
-        const date = new Date(createTime);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-       return `${month}月${day}日, ${year}年`;
-      })()
-    : "N/A"}
-</span>
-                
-      </motion.p>
-    </motion.div>
+      </p>
+    </div>
   );
 }
 
