@@ -30,7 +30,7 @@ export default function ArticleEditor() {
           <div className="h-full flex lg:flex-row flex-col gap-4 lg:gap-6">
             {/* 主编辑区域 */}
             <div className="flex-1 p-4 lg:p-6 overflow-auto">
-              <div className="bg-base-200/50 rounded-lg h-auto min-h-full">
+              <div className="bg-base-100 rounded-lg h-auto min-h-full">
                 <Editor />
               </div>
             </div>
@@ -95,7 +95,7 @@ export default function ArticleEditor() {
                       <input 
                         type="text" 
                         className="input input-bordered input-sm" 
-                        placeholder="输入标签，用逗���分隔"
+                        placeholder="输入标签，用逗号分隔"
                       />
                     </div>
                   </div>

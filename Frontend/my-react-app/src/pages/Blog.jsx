@@ -20,15 +20,15 @@ export default function Blog({ id, articleTitle, createTime, articleSummary, cla
       className={`cursor-pointer p-8 ${className}`}
     >
       <h2 className="text-2xl font-semibold mb-3 line-clamp-2 
-                     text-base-content transition-colors duration-300
-                     group-hover:text-primary">
+                     text-base-content/90 transition-colors duration-300
+                     group-hover:text-primary tracking-wide">
         {articleTitle}
       </h2>
-      <div className="flex items-center gap-2 text-base-content/60 text-sm mb-4">
+      <div className="flex items-center gap-2 text-base-content/50 text-sm mb-4">
         <CiCalendar className="w-4 h-4" />
-        <span>{formatDate(createTime)}</span>
+        <span className="font-medium">{formatDate(createTime)}</span>
       </div>
-      <p className="text-base-content/80 text-base line-clamp-3">
+      <p className="text-base-content/70 text-base line-clamp-3 leading-relaxed">
         {articleSummary}
       </p>
     </div>

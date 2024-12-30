@@ -1,37 +1,13 @@
 import { HomeIcon, DocumentIcon, PencilSquareIcon, Bars3BottomLeftIcon, UserCircleIcon, UserGroupIcon, ChevronLeftIcon } from "@heroicons/react/24/solid";
-import { useNavigate, Link, Routes, Route, Outlet } from "react-router-dom";
-import Editor from "./Editor";
+import { Link, Outlet } from "react-router-dom";
 import ThemeController from "./ThemeController";
 import { useState, useEffect } from "react";
-import ArticleEditor from './ArticleEditor';
-import ArticleManager from './ArticleManager';
-import Dashboard from './Dashboard';
-import UserManager from './UserManager';
 
-const UserCenter = () => {
-  return (
-    <div className="h-full">
-      <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col">
-        <div className="px-4 lg:px-6 py-4 border-b border-base-200/80">
-          <h1 className="text-xl font-bold text-base-content">用户中心</h1>
-          <p className="text-sm text-base-content/60 mt-1">管理您的个人信息</p>
-        </div>
-        <div className="p-4 lg:p-6 flex-1">
-          <div className="space-y-6">
-            <div className="bg-base-200/50 rounded-lg p-6">
-              <h2 className="text-lg font-semibold mb-4">个人资料</h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+
+
 
 export default function SidebarLayout() {
-  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userRole, setUserRole] = useState('guest');
 
