@@ -1,23 +1,156 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MagnifyingGlassIcon, FunnelIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import axiosInstance from "./Axios";
+import { useNavigate } from "react-router-dom";
 
 export default function ArticleManager() {
+  const navigate = useNavigate();
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedArticles, setSelectedArticles] = useState([]);
   
-  // 模拟文章数据
-  const articles = [
-    {
-      id: 1,
-      title: "如何使用 React 构建现代化应用",
-      status: "published",
-      category: "技术",
-      views: 1234,
-      comments: 23,
-      publishDate: "2024-03-15",
-      lastModified: "2024-03-16"
-    },
-    // ... 更多文章
-  ];
+  // 分页参数
+  const [pageSize] = useState(10); // 每页显示数量
+  const [pageNum, setPageNum] = useState(1); // 当前页码
+  const [total, setTotal] = useState(0); // 总文章数
+
+  // 选中的文章 ID 列表
+  const [selectedIds, setSelectedIds] = useState([]);
+  
+  // 处理单个文章选中状态
+  const handleSelect = (id) => {
+    setSelectedIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  // 处理全选
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedIds(articles.map(article => article.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  // 批量删除文章
+  const handleBatchDelete = async () => {
+    if (selectedIds.length === 0) {
+      // 可以添加提示：请先选择要删除的文章
+      return;
+    }
+
+    if (!window.confirm(`确定要删除选中的 ${selectedIds.length} 篇文章吗？`)) {
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.delete("/article/auth/back/delete", {
+        data: selectedIds  // DELETE 请求的数据需要放在 data 字段中
+      });
+      
+      if (response.data.code === 200) {
+        // 删除成功后刷新列表
+        fetchArticles(pageNum);
+        // 清空选中状态
+        setSelectedIds([]);
+      } else {
+        throw new Error(response.data.msg || "删除失败");
+      }
+    } catch (error) {
+      console.error("删除文章失败:", error);
+      // 可以添加错误提示
+    }
+  };
+
+  // 单篇文章删除
+  const handleDelete = async (id) => {
+    if (!window.confirm("确定要删除这篇文章吗？")) {
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.delete("/article/auth/back/delete", {
+        data: [id]  // 单个删除时也使用数组格式
+      });
+      
+      if (response.data.code === 200) {
+        fetchArticles(pageNum);
+      } else {
+        throw new Error(response.data.msg || "删除失败");
+      }
+    } catch (error) {
+      console.error("删除文章失败:", error);
+    }
+  };
+
+  // 获取文章列表 - 添加分页参数
+  const fetchArticles = async (page) => {
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get("/article/list", {
+        params: {
+          pageNum: page,
+          pageSize
+        }
+      });
+      const { code, data, msg } = response.data;
+      
+      if (code === 200) {
+        setArticles(data.page); // 假设返回的数据结构中包含分页列表
+        setTotal(data.total); // 设置总数
+      } else {
+        throw new Error(msg || "Failed to fetch articles");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred while fetching articles");
+      console.error("Error fetching articles:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 监听页码变化
+  useEffect(() => {
+    fetchArticles(pageNum);
+  }, [pageNum]);
+
+  // 计算总页数
+  const totalPages = Math.ceil(total / pageSize);
+
+  // 页码变化处理函数
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPageNum(newPage);
+    }
+  };
+
+  // 格式化日期
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // 处理编辑
+  const handleEdit = (articleId) => {
+    navigate(`/admin/editor/${articleId}`);
+  };
+
+  // 处理新建文章
+  const handleCreate = () => {
+    navigate('/admin/editor');
+  };
 
   return (
     <div className="h-full">
@@ -30,8 +163,18 @@ export default function ArticleManager() {
               <p className="text-sm text-base-content/60 mt-1">管理和编辑您的所有文章</p>
             </div>
             <div className="flex items-center gap-3">
-              <button className="btn btn-ghost btn-sm">批量删除</button>
-              <button className="btn btn-primary btn-sm">新建文章</button>
+              <button 
+                className={`btn btn-ghost btn-sm ${selectedIds.length === 0 ? 'btn-disabled' : ''}`}
+                onClick={handleBatchDelete}
+              >
+                批量删除 {selectedIds.length > 0 && `(${selectedIds.length})`}
+              </button>
+              <button 
+                className="btn btn-primary btn-sm"
+                onClick={handleCreate}
+              >
+                新建文章
+              </button>
             </div>
           </div>
         </div>
@@ -75,34 +218,67 @@ export default function ArticleManager() {
           </div>
         </div>
 
-        {/* 文章列表 - 添加响应式滚动 */}
+        {/* 文章列表 */}
         <div className="flex-1 overflow-auto">
-          <div className="min-w-[800px] lg:w-full">
-            <table className="table table-zebra w-full">
-              <thead className="bg-base-200/50">
+          <table className="table table-zebra">
+            <thead>
+              <tr>
+                <th>
+                  <input 
+                    type="checkbox" 
+                    className="checkbox checkbox-sm"
+                    checked={articles.length > 0 && selectedIds.length === articles.length}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+                <th>文章标题</th>
+                <th>状态</th>
+                <th>分类</th>
+                <th>浏览</th>
+                <th>评论</th>
+                <th>发布时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
                 <tr>
-                  <th className="w-[40px]">
-                    <input type="checkbox" className="checkbox checkbox-sm" />
-                  </th>
-                  <th>文章标题</th>
-                  <th>状态</th>
-                  <th>分类</th>
-                  <th>浏览</th>
-                  <th>评论</th>
-                  <th>发布时间</th>
-                  <th>操作</th>
+                  <td colSpan="8" className="text-center py-8">
+                    <div className="loading loading-spinner loading-lg text-primary"></div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {articles.map((article) => (
+              ) : error ? (
+                <tr>
+                  <td colSpan="8" className="text-center py-8 text-error">
+                    {error}
+                  </td>
+                </tr>
+              ) : (
+                articles.map((article) => (
                   <tr key={article.id}>
                     <td>
-                      <input type="checkbox" className="checkbox checkbox-sm" />
+                      <input 
+                        type="checkbox" 
+                        className="checkbox checkbox-sm"
+                        checked={selectedIds.includes(article.id)}
+                        onChange={() => handleSelect(article.id)}
+                      />
                     </td>
                     <td>
-                      <div className="font-medium">{article.title}</div>
-                      <div className="text-xs text-base-content/60">
-                        最后修改：{article.lastModified}
+                      <div 
+                        className="cursor-pointer group"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleEdit(article.id);
+                        }}
+                      >
+                        <div className="font-medium group-hover:text-primary transition-colors">
+                          {article.articleTitle}
+                        </div>
+                        <div className="text-xs text-base-content/60">
+                          最后修改：{formatDate(article.createTime)}
+                        </div>
                       </div>
                     </td>
                     <td>
@@ -110,41 +286,102 @@ export default function ArticleManager() {
                         已发布
                       </div>
                     </td>
-                    <td>{article.category}</td>
-                    <td>{article.views}</td>
-                    <td>{article.comments}</td>
-                    <td>{article.publishDate}</td>
+                    <td>{article.category || '未分类'}</td>
+                    <td>{article.views || 0}</td>
+                    <td>{article.commentCount || 0}</td>
+                    <td>{formatDate(article.createTime)}</td>
                     <td>
                       <div className="dropdown dropdown-end">
                         <button className="btn btn-ghost btn-sm btn-square">
                           <EllipsisHorizontalIcon className="w-5 h-5" />
                         </button>
                         <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
-                          <li><a>编辑</a></li>
+                          <li>
+                            <button 
+                              className="w-full text-left"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleEdit(article.id);
+                              }}
+                            >
+                              编辑
+                            </button>
+                          </li>
                           <li><a>预览</a></li>
-                          <li><a className="text-error">删除</a></li>
+                          <li>
+                            <button 
+                              className="text-error w-full text-left"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDelete(article.id);
+                              }}
+                            >
+                              删除
+                            </button>
+                          </li>
                         </ul>
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* 分页 - 优化移动端显示 */}
+        {/* 分页 */}
         <div className="p-4 border-t border-base-200/80">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="text-sm text-base-content/60 order-2 lg:order-1">
-              共 23 篇文章
+              共 {total} 篇文章
             </div>
             <div className="join order-1 lg:order-2">
-              <button className="join-item btn btn-sm">«</button>
-              <button className="join-item btn btn-sm">1</button>
-              <button className="join-item btn btn-sm btn-active">2</button>
-              <button className="join-item btn btn-sm">3</button>
-              <button className="join-item btn btn-sm">»</button>
+              <button 
+                className="join-item btn btn-sm"
+                onClick={() => handlePageChange(pageNum - 1)}
+                disabled={pageNum === 1 || loading}
+              >
+                «
+              </button>
+              
+              {/* 动态生成页码按钮 */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(page => {
+                  // 显示当前页码附近的页码和首尾页码
+                  return page === 1 || 
+                         page === totalPages || 
+                         Math.abs(page - pageNum) <= 1;
+                })
+                .map((page, index, array) => {
+                  // 添加省略号
+                  if (index > 0 && page - array[index - 1] > 1) {
+                    return (
+                      <button key={`ellipsis-${page}`} className="join-item btn btn-sm btn-disabled">
+                        ...
+                      </button>
+                    );
+                  }
+                  return (
+                    <button
+                      key={page}
+                      className={`join-item btn btn-sm ${pageNum === page ? 'btn-active' : ''}`}
+                      onClick={() => handlePageChange(page)}
+                      disabled={loading}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+
+              <button 
+                className="join-item btn btn-sm"
+                onClick={() => handlePageChange(pageNum + 1)}
+                disabled={pageNum === totalPages || loading}
+              >
+                »
+              </button>
             </div>
           </div>
         </div>

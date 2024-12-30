@@ -18,30 +18,30 @@ export default function Experience() {
 
   // 工作经历数据
   const experiences = [
+    // {
+    //   title: "高级前端开发工程师",
+    //   company: "某科技公司",
+    //   date: "2022 - 至今",
+    //   type: "work",
+    //   description: "负责公司核心产品的前端架构设计和开发，带领团队完成多个重要项目。",
+    //   icon: FaBriefcase,
+    //   side: "right"
+    // },
     {
-      title: "高级前端开发工程师",
-      company: "某科技公司",
-      date: "2022 - 至今",
-      type: "work",
-      description: "负责公司核心产品的前端架构设计和开发，带领团队完成多个重要项目。",
-      icon: FaBriefcase,
-      side: "right"
-    },
-    {
-      title: "计算机科学与技术",
-      company: "某大学",
-      date: "2018 - 2022",
+      title: "修士",
+      company: "電気通信大学",
+      date: "2024 - 現在",
       type: "education",
-      description: "主修计算机科学与技术，专注于Web开发和人工智能方向。",
+      description: "情報ネットワーク専攻、数値計算、並列計算",
       icon: FaGraduationCap,
       side: "left"
     },
     {
-      title: "前端开发工程师",
-      company: "某互联网公司",
-      date: "2020 - 2022",
-      type: "work",
-      description: "参与多个大型Web应用的开发，负责用户界面设计和实现。",
+      title: "学部生",
+      company: "電気通信大学",
+      date: "2020 - 2024",
+      type: "student",
+      description: "情報系専攻",
       icon: FaLaptopCode,
       side: "right"
     }

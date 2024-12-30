@@ -36,23 +36,13 @@ export default function App() {
           } 
         />
 
-        <Route path="/admin/*" element={<PrivateRoute><SidebarLayout /></PrivateRoute>}>
-          <Route index element={
-            <PrivateElement element={<Dashboard />} requiredRole="admin" />
-          } />
+        <Route path="/admin" element={<PrivateElement element={<SidebarLayout />} />}>
+          <Route index element={<Dashboard />} />
+          <Route path="articles" element={<ArticleManager />} />
+          <Route path="editor" element={<ArticleEditor />} />
+          <Route path="editor/:id" element={<ArticleEditor />} />
+          <Route path="users" element={<UserManager />} />
           <Route path="user-center" element={<UserCenter />} />
-          <Route 
-            path="articles" 
-            element={<PrivateElement element={<ArticleManager />} requiredRole="admin" />} 
-          />
-          <Route 
-            path="editor" 
-            element={<PrivateElement element={<ArticleEditor />} requiredRole="admin" />} 
-          />
-          <Route 
-            path="users" 
-            element={<PrivateElement element={<UserManager />} requiredRole="admin" />} 
-          />
         </Route>
 
         <Route path="/home" element={<Navigate to="/" replace />} />

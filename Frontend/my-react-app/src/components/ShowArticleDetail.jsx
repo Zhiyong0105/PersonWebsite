@@ -187,12 +187,12 @@ export default function ShowArticleDetail() {
       </button>
 
       {/* TOC 切换按钮 */}
-      <button
+      {/* <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="fixed top-4 right-4 z-50 btn btn-ghost btn-circle"
       >
         <span className="text-lg">≡</span>
-      </button>
+      </button> */}
 
       {/* 内容区域 */}
       <div className="container mx-auto px-4 py-8">
@@ -221,7 +221,7 @@ export default function ShowArticleDetail() {
         animate={{ x: isMenuOpen ? 0 : "100%" }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
         className="fixed top-16 right-0 w-72 max-h-[calc(100vh-4rem)] z-40 bg-base-100/95 
-                   backdrop-blur-sm shadow-lg border-l border-base-200/50"
+                   backdrop-blur-sm shadow-lg border-l border-base-200/50 hidden lg:block"
       >
         <div className="h-full flex flex-col">
           <div className="p-4 border-b border-base-200/50">
