@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -67,6 +67,12 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
     }
   };
 
+  // 处理GitHub登录
+  const handleGithubLogin = () => {
+    // 重定向到后端的 OAuth2 登录端点
+    window.location.href = 'http://localhost:8080/oauth2/authorization/github';
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -108,7 +114,10 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
                 <FaGoogle className="w-5 h-5" />
                 <span>使用 Google 账号{isSignUp ? "注册" : "登录"}</span>
               </button>
-              <button className="btn btn-outline w-full gap-2 hover:bg-base-200 hover:border-base-200">
+              <button 
+                onClick={handleGithubLogin}
+                className="btn btn-outline w-full gap-2 hover:bg-base-200 hover:border-base-200"
+              >
                 <FaGithub className="w-5 h-5" />
                 <span>使用 GitHub 账号{isSignUp ? "注册" : "登录"}</span>
               </button>

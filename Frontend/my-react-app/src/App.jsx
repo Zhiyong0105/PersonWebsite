@@ -36,19 +36,21 @@ export default function App() {
           } 
         />
 
-        <Route path="/admin" element={<PrivateElement element={<SidebarLayout />} />}>
-          <Route index element={<Dashboard />} />
-          <Route path="articles" element={<ArticleManager />} />
-          <Route path="editor" element={<ArticleEditor />} />
-          <Route path="editor/:id" element={<ArticleEditor />} />
-          <Route path="users" element={<UserManager />} />
-          <Route path="user-center" element={<UserCenter />} />
-        </Route>
+      <Route path="/admin" element={<PrivateElement element={<SidebarLayout />} requiredRole="user" />}>
+        <Route index element={<PrivateElement element={<Dashboard />} requiredRole="admin" />} />
+        <Route path="articles" element={<PrivateElement element={<ArticleManager />} requiredRole="admin" />} />
+        <Route path="editor" element={<PrivateElement element={<ArticleEditor />} requiredRole="admin" />} />
+        <Route path="editor/:id" element={<PrivateElement element={<ArticleEditor />} requiredRole="admin" />} />
+        <Route path="users" element={<PrivateElement element={<UserManager />} requiredRole="admin" />} />
+        <Route path="user-center" element={<UserCenter />} />
+      </Route>
 
         <Route path="/home" element={<Navigate to="/" replace />} />
         <Route path="/project" element={<Navigate to="/#project" replace />} />
         <Route path="/about" element={<Navigate to="/#about" replace />} />
         <Route path="/experience" element={<Navigate to="/#experience" replace />} />
+
+       
       </Routes>
     </Router>
   );

@@ -33,6 +33,40 @@ export default function ListArticle() {
     handleListArticle(pageNum);
   }, [pageNum]);
 
+  useEffect(() => {
+    const getToken = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isFromGithub = urlParams.get('from') === 'github';
+
+      if (isFromGithub) {
+        try {
+          const response = await axiosInstance.get('/user/github/verifyToken', {
+            withCredentials: true
+          });
+          
+          if (response.data.code === 200) {
+            const { token, username, email } = response.data.data;
+            if (token) {
+              localStorage.setItem('token', token);
+              const userInfo = {
+                username:username,
+                role: 'guest', // 根据测试账号设置权限
+                email: email
+              };
+              localStorage.setItem('userInfo', JSON.stringify(userInfo));
+              console.log(userInfo);
+              window.location.href = '/article';
+            }
+          }
+        } catch (error) {
+          console.error('Failed to verify token:', error);
+        }
+      }
+    };
+
+    getToken();
+  }, []);
+
   // 计算总页数
   const totalPages = Math.ceil(total / pageSize);
 
