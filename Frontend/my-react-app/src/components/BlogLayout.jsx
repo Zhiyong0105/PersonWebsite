@@ -28,6 +28,7 @@ export default function BlogLayout({ children }) {
     // 登出处理函数
     const handleLogout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("userInfo");
         setIsAuthenticated(false);
     };
 

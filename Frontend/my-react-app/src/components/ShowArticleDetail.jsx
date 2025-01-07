@@ -17,6 +17,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { IoArrowBack } from "react-icons/io5"; // 添加返回图标
 import { FaRegComment } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import Comments from './Comments';
 
 // 解析标题的函数
 const extractHeadings = (markdown) => {
@@ -60,9 +61,6 @@ export default function ShowArticleDetail() {
   const [isMenuOpen, setIsMenuOpen] = useState(true); // 添加折叠控制状态
   const navigate = useNavigate(); // 添加导航钩子
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-  const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([]);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -120,30 +118,6 @@ export default function ShowArticleDetail() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeHeading]);
 
-  // 获取评论列表
-  const fetchComments = async () => {
-    try {
-      const response = await axiosInstance.get(`/api/comments/${id}`);
-      setComments(response.data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
-
-  // 提交评论
-  const handleSubmitComment = async (e) => {
-    e.preventDefault();
-    if (!comment.trim()) return;
-
-    try {
-      await axiosInstance.post(`/api/comments/${id}`, { content: comment });
-      setComment("");
-      fetchComments();
-    } catch (error) {
-      console.error("Error posting comment:", error);
-    }
-  };
-
   // 监听滚动位置来控制返回顶部按钮的显示
   useEffect(() => {
     const handleScroll = () => {
@@ -186,32 +160,31 @@ export default function ShowArticleDetail() {
         <IoArrowBack className="w-6 h-6" />
       </button>
 
-      {/* TOC 切换按钮 */}
-      {/* <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="fixed top-4 right-4 z-50 btn btn-ghost btn-circle"
-      >
-        <span className="text-lg">≡</span>
-      </button> */}
+
 
       {/* 内容区域 */}
       <div className="container mx-auto px-4 py-8">
-        {/* 文章内容 - 居中显示 */}
-        <div className="max-w-3xl mx-auto prose">
-          <ReactMarkdown
-            remarkPlugins={[remarkMath, remarkGfm]}
-            rehypePlugins={[rehypeHighlight, rehypeKatex, rehypeSlug]}
-            components={{
-              h1: ({node, ...props}) => <h1 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-              h2: ({node, ...props}) => <h2 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-              h3: ({node, ...props}) => <h3 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-              h4: ({node, ...props}) => <h4 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-              h5: ({node, ...props}) => <h5 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-              h6: ({node, ...props}) => <h6 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />
-            }}
-          >
-            {article?.articleContent || ""}
-          </ReactMarkdown>
+        <div className="max-w-4xl mx-auto">
+          {/* 文章内容 */}
+          <article>
+            <ReactMarkdown
+              remarkPlugins={[remarkMath, remarkGfm]}
+              rehypePlugins={[rehypeHighlight, rehypeKatex, rehypeSlug]}
+              components={{
+                h1: ({node, ...props}) => <h1 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h2: ({node, ...props}) => <h2 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h3: ({node, ...props}) => <h3 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h4: ({node, ...props}) => <h4 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h5: ({node, ...props}) => <h5 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                h6: ({node, ...props}) => <h6 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />
+              }}
+            >
+              {article?.articleContent || ""}
+            </ReactMarkdown>
+          </article>
+
+          {/* 评论组件 - 只在文章加载完成后显示 */}
+          {article && <Comments articleId={id} />}
         </div>
       </div>
 
@@ -258,65 +231,6 @@ export default function ShowArticleDetail() {
               ))}
             </div>
           </div>
-        </div>
-      </motion.div>
-
-      {/* 评论抽屉 - 修复评论功能 */}
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: showComments ? 0 : "100%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed inset-y-0 right-0 w-96 bg-base-100 shadow-xl z-50"
-      >
-        <div className="h-full flex flex-col">
-          {/* 评论头部 */}
-          <div className="p-4 border-b border-base-200 flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Comments</h3>
-            <button
-              onClick={() => setShowComments(false)}
-              className="p-2 hover:bg-base-200 rounded-full transition-colors"
-            >
-              <IoClose className="w-6 h-6" />
-            </button>
-          </div>
-
-          {/* 评论列表 */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {comments.map((comment) => (
-              <div key={comment.id} className="bg-base-200 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                    {comment.author.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-medium">{comment.author}</p>
-                    <p className="text-sm text-base-content/60">
-                      {new Date(comment.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-base-content/80">{comment.content}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* 评论输入框 */}
-          <form onSubmit={handleSubmitComment} className="p-4 border-t border-base-200">
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Write a comment..."
-              className="w-full h-24 p-3 rounded-lg bg-base-200 resize-none focus:outline-none 
-                       focus:ring-2 focus:ring-primary/50"
-            />
-            <button
-              type="submit"
-              className="mt-2 w-full btn btn-primary"
-              disabled={!comment.trim()}
-            >
-              Post Comment
-            </button>
-          </form>
         </div>
       </motion.div>
 

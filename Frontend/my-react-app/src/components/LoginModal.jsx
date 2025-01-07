@@ -34,29 +34,27 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
       const { code, msg, data } = response.data;
 
       if (code === 200) {
-        // 测试用户权限判断
         const isAdmin = formData.username === 'string1' && formData.password === '123456';
         
         const userInfo = {
           ...data,
           username: formData.username,
-          role: isAdmin ? 'admin' : 'guest', // 根据测试账号设置权限
+          role: isAdmin ? 'admin' : 'guest',
           email: `${formData.username}@example.com`
         };
 
-        // 保存token
+        // 先保存数据
         localStorage.setItem("token", data.token);
-        // 保存用户信息，包括角色
         localStorage.setItem("userInfo", JSON.stringify(userInfo));
         
-        onLogin?.();
-        onClose();
+        // 更新父组件状态
+        onLogin?.(userInfo);
         
-        // 根据角色重定向到不同页面
+        // 最后再进行导航
         if (isAdmin) {
-          navigate("/admin"); // 管理员进入 Dashboard
+          navigate("/admin");
         } else {
-          navigate("/admin/user-center"); // 普通用户进入用户中心
+          navigate("/admin/user-center");
         }
       } else {
         setError(msg || "登录失败，请重试");
@@ -69,9 +67,13 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
 
   // 处理GitHub登录
   const handleGithubLogin = () => {
+    // 设置登录来源标记
+    sessionStorage.setItem('loginSource', 'github');
     // 重定向到后端的 OAuth2 登录端点
     window.location.href = 'http://localhost:8080/oauth2/authorization/github';
   };
+
+
 
   if (!isOpen) return null;
 

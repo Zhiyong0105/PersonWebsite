@@ -35,10 +35,11 @@ export default function ListArticle() {
 
   useEffect(() => {
     const getToken = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const isFromGithub = urlParams.get('from') === 'github';
-
-      if (isFromGithub) {
+      const token = localStorage.getItem('token');
+      const loginSource = sessionStorage.getItem('loginSource');
+      
+      // 只有在没有 token 且是 GitHub 登录重定向时才验证
+      if (!token && loginSource === 'github') {
         try {
           const response = await axiosInstance.get('/user/github/verifyToken', {
             withCredentials: true
@@ -48,14 +49,13 @@ export default function ListArticle() {
             const { token, username, email } = response.data.data;
             if (token) {
               localStorage.setItem('token', token);
-              const userInfo = {
-                username:username,
-                role: 'guest', // 根据测试账号设置权限
-                email: email
-              };
-              localStorage.setItem('userInfo', JSON.stringify(userInfo));
-              console.log(userInfo);
-              window.location.href = '/article';
+              localStorage.setItem('userInfo', JSON.stringify({
+                username,
+                role: 'guest',
+                email
+              }));
+              // 清除登录来源标记
+              sessionStorage.removeItem('loginSource');
             }
           }
         } catch (error) {
