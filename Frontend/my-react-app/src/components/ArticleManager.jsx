@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { MagnifyingGlassIcon, FunnelIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
-import axiosInstance from "./Axios";
 import { useNavigate } from "react-router-dom";
+import { articleAPI } from './api/article/article';
 
 export default function ArticleManager() {
   const navigate = useNavigate();
@@ -41,7 +41,6 @@ export default function ArticleManager() {
   // 批量删除文章
   const handleBatchDelete = async () => {
     if (selectedIds.length === 0) {
-      // 可以添加提示：请先选择要删除的文章
       return;
     }
 
@@ -50,21 +49,13 @@ export default function ArticleManager() {
     }
 
     try {
-      const response = await axiosInstance.delete("/article/auth/back/delete", {
-        data: selectedIds  // DELETE 请求的数据需要放在 data 字段中
-      });
-      
-      if (response.data.code === 200) {
-        // 删除成功后刷新列表
-        fetchArticles(pageNum);
-        // 清空选中状态
-        setSelectedIds([]);
-      } else {
-        throw new Error(response.data.msg || "删除失败");
-      }
+      await articleAPI.deleteArticles(selectedIds);
+      // 删除成功后刷新列表
+      fetchArticles(pageNum);
+      // 清空选中状态
+      setSelectedIds([]);
     } catch (error) {
       console.error("删除文章失败:", error);
-      // 可以添加错误提示
     }
   };
 
@@ -75,40 +66,26 @@ export default function ArticleManager() {
     }
 
     try {
-      const response = await axiosInstance.delete("/article/auth/back/delete", {
-        data: [id]  // 单个删除时也使用数组格式
-      });
-      
-      if (response.data.code === 200) {
-        fetchArticles(pageNum);
-      } else {
-        throw new Error(response.data.msg || "删除失败");
-      }
+      await articleAPI.deleteArticles([id]);
+      fetchArticles(pageNum);
     } catch (error) {
       console.error("删除文章失败:", error);
     }
   };
 
-  // 获取文章列表 - 添加分页参数
+  // 获取文章列表
   const fetchArticles = async (page) => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get("/article/list", {
-        params: {
-          pageNum: page,
-          pageSize
-        }
+      const data = await articleAPI.getArticleList({
+        pageNum: page,
+        pageSize
       });
-      const { code, data, msg } = response.data;
       
-      if (code === 200) {
-        setArticles(data.page); // 假设返回的数据结构中包含分页列表
-        setTotal(data.total); // 设置总数
-      } else {
-        throw new Error(msg || "Failed to fetch articles");
-      }
+      setArticles(data.page);
+      setTotal(data.total);
     } catch (err) {
-      setError(err.message || "An error occurred while fetching articles");
+      setError(err.message);
       console.error("Error fetching articles:", err);
     } finally {
       setLoading(false);

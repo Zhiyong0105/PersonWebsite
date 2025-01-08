@@ -12,11 +12,21 @@ export default function BlogHeader({ onLoginClick }) {
     const [isLogin, setIsLogin] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
+    // 检查登录状态
+    const checkLoginStatus = () => {
         const token = localStorage.getItem("token");
-        if (token) {
-            setIsLogin(true);
-        }
+        setIsLogin(!!token);
+    };
+
+    useEffect(() => {
+        checkLoginStatus();
+        
+        // 监听登录状态变化
+        window.addEventListener('loginStateChanged', checkLoginStatus);
+        
+        return () => {
+            window.removeEventListener('loginStateChanged', checkLoginStatus);
+        };
     }, []);
 
     return (
@@ -56,13 +66,13 @@ export default function BlogHeader({ onLoginClick }) {
                 )}
 
                 {/* 主题切换按钮 */}
-                <div className="hidden sm:block">
+                <div className=" sm:block">
                     <ThemeController />
                 </div>
             </div>
 
             {/* 移动端菜单 */}
-            <div className="sm:hidden flex-shrink-0">
+            {/* <div className="sm:hidden flex-shrink-0">
                 <div className="dropdown dropdown-hover dropdown-end">
                     <div tabIndex={0} role="button" className="btn m-1 btn-ghost">
                         <IoIosArrowDropdownCircle className="h-6 w-6" />
@@ -75,7 +85,7 @@ export default function BlogHeader({ onLoginClick }) {
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

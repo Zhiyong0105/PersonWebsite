@@ -6,6 +6,7 @@ import {
   ShieldCheckIcon,
   ClockIcon
 } from "@heroicons/react/24/outline";
+import { userAPI } from './api/user/user';
 
 export default function UserCenter() {
   const [userInfo, setUserInfo] = useState({});
@@ -29,6 +30,27 @@ export default function UserCenter() {
     { id: 'notification', name: '消息通知', icon: BellIcon },
     { id: 'loginHistory', name: '登录记录', icon: ClockIcon },
   ];
+
+  // 获取用户信息
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = await userAPI.getUserInfo();
+      setUserInfo(userInfo);
+    } catch (error) {
+      console.error('Failed to fetch user info:', error);
+    }
+  };
+
+  // 更新用户信息
+  const updateProfile = async (newInfo) => {
+    try {
+      await userAPI.updateUserInfo(newInfo);
+      // 刷新用户信息
+      fetchUserInfo();
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {

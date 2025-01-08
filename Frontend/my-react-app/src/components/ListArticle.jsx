@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import Blog from "../pages/Blog";
-import axiosInstance from "./Axios";
 import { LazyMotion, domAnimation, m } from 'framer-motion';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { userAPI } from './api/user/user';
+import { articleAPI } from './api/article/article';
 
 export default function ListArticle() {
   const [articles, setArticles] = useState([]);
@@ -10,53 +11,81 @@ export default function ListArticle() {
   const [pageNum, setPageNum] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  // 获取文章列表
   const handleListArticle = async (page) => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await axiosInstance.get("/article/list", {
-        params: { pageNum: page, pageSize },
+      const data = await articleAPI.getArticleList({
+        pageNum: page,
+        pageSize,
+        // 从 URL 获取搜索参数
+        ...Object.fromEntries(new URLSearchParams(window.location.search))
       });
-      const { code, data } = response.data;
-      if (code === 200) {
+      
+      if (Array.isArray(data.page)) {
         setArticles(data.page);
-        setTotal(data.total || 0);
+        setTotal(data.total);
+      } else {
+        setArticles([]);
+        setTotal(0);
+        setError('暂无相关文章');
       }
-    } catch (error) {
-      console.error("Error fetching articles:", error);
+    } catch (err) {
+      console.error("Error fetching articles:", err);
+      setError(err.message || '获取文章列表失败');
+      setArticles([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   };
 
+  // 监听 URL 参数变化
   useEffect(() => {
+    const handleUrlChange = () => {
+      setPageNum(1); // 重置页码
+      handleListArticle(1);
+    };
+
+    // 监听 popstate 事件（浏览器前进/后退）
+    window.addEventListener('popstate', handleUrlChange);
+
+    // 初始加载
     handleListArticle(pageNum);
+
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, []);
+
+  // 页码变化时获取数据
+  useEffect(() => {
+    if (pageNum > 1) {
+      handleListArticle(pageNum);
+    }
   }, [pageNum]);
 
+  // 处理 GitHub 登录
   useEffect(() => {
-    const getToken = async () => {
-      const token = localStorage.getItem('token');
-      const loginSource = sessionStorage.getItem('loginSource');
-      
-      // 只有在没有 token 且是 GitHub 登录重定向时才验证
-      if (!token && loginSource === 'github') {
+    const verifyGithubLogin = async () => {
+      const code = new URLSearchParams(window.location.search).get('code');
+      if (code) {
         try {
-          const response = await axiosInstance.get('/user/github/verifyToken', {
-            withCredentials: true
-          });
+          const data = await userAPI.verifyGithubToken();
           
-          if (response.data.code === 200) {
-            const { token, username, email } = response.data.data;
-            if (token) {
-              localStorage.setItem('token', token);
-              localStorage.setItem('userInfo', JSON.stringify({
-                username,
-                role: 'guest',
-                email
-              }));
-              // 清除登录来源标记
-              sessionStorage.removeItem('loginSource');
-            }
+          if (data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userInfo', JSON.stringify({
+              username: data.username,
+              email: data.email
+            }));
+            sessionStorage.removeItem('loginSource');
+            
+            // 触发登录状态改变事件
+            window.dispatchEvent(new Event('loginStateChanged'));
           }
         } catch (error) {
           console.error('Failed to verify token:', error);
@@ -64,13 +93,11 @@ export default function ListArticle() {
       }
     };
 
-    getToken();
+    verifyGithubLogin();
   }, []);
 
   // 计算总页数
   const totalPages = Math.ceil(total / pageSize);
-
-  // 分页按钮组件
   const PaginationButton = ({ page, active, disabled, children, onClick }) => (
     <button
       onClick={onClick}
@@ -93,7 +120,6 @@ export default function ListArticle() {
       {children}
     </button>
   );
-
   return (
     <div className="min-h-screen bg-base-100">
       <div className="container mx-auto px-4 py-4">

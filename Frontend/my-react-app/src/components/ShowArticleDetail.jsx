@@ -1,23 +1,18 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axiosInstance from "./Axios"; // 自定义的 Axios 实例
+import { articleAPI } from './api/article/article';
 import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight"; // 代码高亮插件
-import remarkMath from "remark-math"; // 支持数学公式
-import rehypeKatex from "rehype-katex"; // 支持数学公式渲染
-import "highlight.js/styles/github.css"; // GitHub 风格的代码高亮
-import "katex/dist/katex.min.css"; // 数学公式样式
+import rehypeHighlight from "rehype-highlight";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "highlight.js/styles/github.css";
+import "katex/dist/katex.min.css";
 import rehypeSlug from "rehype-slug";
-// import remarkToc from 'remark-toc';
-// import remarkGfm from "remark-gfm";
-import FloatingButton from "./FloatingButton";
-import MarkdownNavbar from 'markdown-navbar';
 import remarkGfm from "remark-gfm";
-import { motion, useScroll, useSpring } from "framer-motion";
-import { IoArrowBack } from "react-icons/io5"; // 添加返回图标
-import { FaRegComment } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
+import { IoArrowBack } from "react-icons/io5";
 import Comments from './Comments';
+import { IoMdCloseCircle } from "react-icons/io";
 
 // 解析标题的函数
 const extractHeadings = (markdown) => {
@@ -36,61 +31,60 @@ const extractHeadings = (markdown) => {
   return headings;
 };
 
-// 修改滚动函数以添加平滑效果
-const scrollToHeading = (id) => {
-  const element = document.getElementById(id);
-  if (element) {
-    const offset = 80;
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth"
-    });
-  }
-};
-
 export default function ShowArticleDetail() {
-  const { id } = useParams(); // 从路由中获取文章 ID
-  const [article, setArticle] = useState(null); // 存储文章内容
-  const [loading, setLoading] = useState(true); // 加载状态
-  const [error, setError] = useState(null); // 错误状态
-  const [headings, setHeadings] = useState([]); // 添加 headings 状态
-  const [activeHeading, setActiveHeading] = useState(""); // 添加 activeHeading 状态
-  const [isMenuOpen, setIsMenuOpen] = useState(true); // 添加折叠控制状态
-  const navigate = useNavigate(); // 添加导航钩子
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [headings, setHeadings] = useState([]);
+  const [activeHeading, setActiveHeading] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [showToc, setShowToc] = useState(false);
+
+  // 滚动进度
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const response = await axiosInstance.get(`/article/${id}`);
-        const { code, msg, data } = response.data;
-        if (code === 200) {
-          setArticle(data); // 设置文章内容
-          // 解析文章内容中的标题
-          setHeadings(extractHeadings(data.articleContent));
-        } else {
-          throw new Error(msg || "Failed to fetch the article");
-        }
+        const data = await articleAPI.getArticle(id);
+        setArticle(data);
+        setHeadings(extractHeadings(data.articleContent));
       } catch (err) {
-        setError(err.message || "An unexpected error occurred");
+        setError(err.message);
+        console.error("Error fetching article:", err);
       } finally {
-        setLoading(false); // 加载完成
+        setLoading(false);
       }
     };
 
     fetchArticle();
   }, [id]);
 
-  // 改进监听滚动，更新当前活动的标题
+  // 添加滚动到指定标题的函数
+  const scrollToHeading = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 80; // 考虑顶部固定导航的高度
+      window.scrollTo({
+        top: element.offsetTop - offset,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // 添加监听滚动更新当前标题
   useEffect(() => {
     const handleScroll = () => {
       const headingElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
       let currentHeading = '';
       
-      // 找到当前视窗中最上方的标题
       for (let heading of headingElements) {
         const rect = heading.getBoundingClientRect();
         if (rect.top <= 100) {
@@ -102,15 +96,6 @@ export default function ShowArticleDetail() {
       
       if (currentHeading !== activeHeading) {
         setActiveHeading(currentHeading);
-        
-        // 在 TOC 中滚动到当前标题
-        const activeElement = document.querySelector(`[data-heading-id="${currentHeading}"]`);
-        if (activeElement) {
-          activeElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-          });
-        }
       }
     };
 
@@ -118,24 +103,81 @@ export default function ShowArticleDetail() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeHeading]);
 
-  // 监听滚动位置来控制返回顶部按钮的显示
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > window.innerHeight / 2);
-    };
+  // TOC 组件
+  const TableOfContents = ({ className }) => (
+    <div className={`bg-base-100/80 backdrop-blur-sm rounded-lg shadow-lg border border-base-200/50 ${className}`}>
+      <div className="p-4 border-b border-base-200/50">
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium text-base-content/80">目录</h3>
+          <button 
+            className="lg:hidden btn btn-ghost btn-sm btn-circle"
+            onClick={() => setShowToc(false)}
+          >
+            <IoMdCloseCircle className="w-6 h-6"/>
+          </button>
+        </div>
+      </div>
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+      <div className="p-4">
+        <div className="space-y-2 max-h-[calc(100vh-16rem)] overflow-y-auto">
+          {headings.map((heading, index) => (
+            <div
+              key={heading.id || index}
+              style={{ paddingLeft: `${(heading.level - 1) * 16}px` }}
+            >
+              <button
+                onClick={() => {
+                  scrollToHeading(heading.id);
+                  setShowToc(false);
+                }}
+                className={`
+                  text-left w-full px-3 py-1.5 rounded-lg transition-all
+                  group hover:bg-base-200/50
+                  ${activeHeading === heading.id 
+                    ? 'bg-primary/10 text-primary font-medium' 
+                    : 'text-base-content/70 hover:text-base-content'
+                  }
+                `}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`
+                    w-1.5 h-1.5 rounded-full transition-colors
+                    ${activeHeading === heading.id 
+                      ? 'bg-primary' 
+                      : 'bg-base-content/30 group-hover:bg-base-content/50'
+                    }
+                  `} />
+                  <span className="text-sm line-clamp-1">
+                    {heading.text}
+                  </span>
+                </div>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
-  // 滚动进度 - 现在可以正常使用了
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  // 加载状态
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="loading loading-spinner loading-lg text-primary"></div>
+      </div>
+    );
+  }
 
+  // 错误状态
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-xl font-semibold text-error">{error}</p>
+      </div>
+    );
+  }
+
+  // 文章不存在
   if (!article) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -152,124 +194,102 @@ export default function ShowArticleDetail() {
         style={{ scaleX }}
       />
 
-      {/* 返回按钮 */}
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 z-50 btn btn-ghost btn-circle"
-      >
-        <IoArrowBack className="w-6 h-6" />
-      </button>
-
-
-
-      {/* 内容区域 */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+      {/* 主要内容区域 */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex justify-between">
           {/* 文章内容 */}
-          <article>
-            <ReactMarkdown
-              remarkPlugins={[remarkMath, remarkGfm]}
-              rehypePlugins={[rehypeHighlight, rehypeKatex, rehypeSlug]}
-              components={{
-                h1: ({node, ...props}) => <h1 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h2: ({node, ...props}) => <h2 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h3: ({node, ...props}) => <h3 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h4: ({node, ...props}) => <h4 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h5: ({node, ...props}) => <h5 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                h6: ({node, ...props}) => <h6 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />
-              }}
-            >
-              {article?.articleContent || ""}
-            </ReactMarkdown>
-          </article>
+          <div className="flex-1 max-w-4xl mx-auto px-0 sm:px-4">
+            {/* 返回按钮 */}
+            <div className="mb-6">
+              <button
+                onClick={() => navigate(-1)}
+                className="btn btn-ghost btn-sm hover:bg-base-200/50 -ml-2"
+              >
+                <IoArrowBack className="w-4 h-4" />
+                <span className="ml-1">返回</span>
+              </button>
+            </div>
 
-          {/* 评论组件 - 只在文章加载完成后显示 */}
-          {article && <Comments articleId={id} />}
-        </div>
-      </div>
+            {/* 文章主体 */}
+            <article className="prose prose-base-content max-w-none prose-sm sm:prose-base">
+              <ReactMarkdown
+                remarkPlugins={[remarkMath, remarkGfm]}
+                rehypePlugins={[rehypeHighlight, rehypeKatex, rehypeSlug]}
+                components={{
+                  h1: ({node, ...props}) => <h1 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} className="text-2xl sm:text-3xl mt-8" {...props} />,
+                  h2: ({node, ...props}) => <h2 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} className="text-xl sm:text-2xl" {...props} />,
+                  h3: ({node, ...props}) => <h3 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} className="text-lg sm:text-xl" {...props} />,
+                  h4: ({node, ...props}) => <h4 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                  h5: ({node, ...props}) => <h5 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                  h6: ({node, ...props}) => <h6 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                  p: ({node, ...props}) => <p className="text-sm sm:text-base" {...props} />,
+                  li: ({node, ...props}) => <li className="text-sm sm:text-base" {...props} />
+                }}
+              >
+                {article?.articleContent || ""}
+              </ReactMarkdown>
+            </article>
 
-      {/* TOC 侧边栏 - 可折叠 */}
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: isMenuOpen ? 0 : "100%" }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className="fixed top-16 right-0 w-72 max-h-[calc(100vh-4rem)] z-40 bg-base-100/95 
-                   backdrop-blur-sm shadow-lg border-l border-base-200/50 hidden lg:block"
-      >
-        <div className="h-full flex flex-col">
-          <div className="p-4 border-b border-base-200/50">
-            <h3 className="font-medium text-base-content/80">Contents</h3>
+            {/* 评论组件 */}
+            {article && <Comments articleId={id} />}
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 toc-scrollbar">
-            <div className="space-y-2">
-              {headings.map((heading, index) => (
-                <div
-                  key={index}
-                  style={{ paddingLeft: `${(heading.level - 1) * 16}px` }}
-                >
-                  <button
-                    data-heading-id={heading.id}
-                    onClick={() => scrollToHeading(heading.id)}
-                    className={`text-left w-full px-3 py-1.5 rounded-lg transition-all
-                              ${activeHeading === heading.id 
-                                ? 'bg-primary/10 text-primary font-medium' 
-                                : 'hover:bg-base-200/50 text-base-content/70'}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className={`w-1 h-1 rounded-full ${
-                        activeHeading === heading.id 
-                          ? 'bg-primary' 
-                          : 'bg-base-content/30'
-                      }`} />
-                      <span className="text-sm line-clamp-1">
-                        {heading.text}
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              ))}
+          {/* 桌面端目录 */}
+          <div className="hidden lg:block">
+            <div className="fixed top-24 right-8 w-64">
+              <TableOfContents />
             </div>
           </div>
-        </div>
-      </motion.div>
 
-      {/* 固定按钮组 */}
-      <div className="fixed right-6 bottom-6 flex flex-col gap-2 items-center">
-        {/* 评论按钮 */}
-        <motion.div
-          className="relative group"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <motion.button
-            onClick={() => setShowComments(true)}
-            className="p-2 bg-base-100/80 backdrop-blur-sm rounded-full shadow-lg 
-                     border border-base-200/50 relative z-10"
+          {/* 移动端目录按钮 */}
+          <button
+            onClick={() => setShowToc(true)}
+            className="lg:hidden fixed right-6 bottom-6 btn btn-circle btn-primary shadow-lg"
+            title="目录"
           >
-            <FaRegComment className="w-6 h-6 text-base-content/70 hover:text-primary transition-colors" />
-          </motion.button>
-          <div className="absolute inset-0 bg-primary/10 rounded-full blur group-hover:blur-md transition-all" />
-        </motion.div>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="w-5 h-5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 6h16M4 12h16M4 18h7" 
+              />
+            </svg>
+          </button>
+        </div>
+      </main>
 
-        {/* 返回顶部按钮 */}
-        <motion.div
-          className="relative group"
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ 
-            opacity: showScrollTop ? 1 : 0,
-            scale: showScrollTop ? 1 : 0.5,
-            pointerEvents: showScrollTop ? "auto" : "none"
-          }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="absolute inset-0 bg-primary/10 rounded-full blur group-hover:blur-md transition-all" />
-          <div className="p-2 bg-base-100/80 backdrop-blur-sm rounded-full shadow-lg 
-                       border border-base-200/50 cursor-pointer">
-            <FloatingButton />
-          </div>
-        </motion.div>
-      </div>
+      {/* 移动端目录抽屉 */}
+      <AnimatePresence>
+        {showToc && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="lg:hidden fixed inset-0 z-50"
+          >
+            <motion.div 
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+              onClick={() => setShowToc(false)}
+            />
+            <motion.div 
+              className="absolute right-0 top-0 bottom-0 w-80 bg-base-100"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 20 }}
+            >
+              <TableOfContents className="h-full" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

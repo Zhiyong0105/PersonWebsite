@@ -4,13 +4,15 @@ import { useState } from "react";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
-import axiosInstance from "./Axios";
+import { articleAPI } from './api/article/article';
+import { useNavigate } from 'react-router-dom';
 
 export default function Editor() {
   const [value, setValue] = useState("");
   const [summaryValue, setSummaryValue] = useState("");
   const [titleValue, setTitleValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const saveArticle = async () => {
     if (!titleValue.trim()) {
@@ -20,27 +22,29 @@ export default function Editor() {
 
     setIsSubmitting(true);
     try {
-      const response = await axiosInstance.post("/article/publish", {
+      await articleAPI.createArticle({
         articleTitle: titleValue,
         articleContent: value,
         articleSummary: summaryValue,
-        status: 1
+        status: 'public'
       });
       
-      if (response.status === 200) {
-        const { code, msg } = response.data;
-        if (code === 200) {
-          alert("发布成功！");
-          // 可以在这里添加发布成功后的跳转逻辑
-        } else {
-          alert(msg || "发布失败，请重试");
-        }
-      }
+      alert("发布成功！");
+      // 发布成功后跳转到文章列表
+      navigate('/admin/articles');
     } catch (error) {
       console.error("Failed to save article:", error);
-      alert("发布失败，请检查网络连接！");
+      alert(error.message || "发布失败，请检查网络连接！");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (window.confirm("确定要取消编辑吗？")) {
+      setValue("");
+      setSummaryValue("");
+      setTitleValue("");
     }
   };
 
@@ -94,13 +98,7 @@ export default function Editor() {
       <div className="p-6 border-t flex justify-end gap-4">
         <button 
           className="btn btn-ghost"
-          onClick={() => {
-            if (confirm("确定要取消编辑吗？")) {
-              setValue("");
-              setSummaryValue("");
-              setTitleValue("");
-            }
-          }}
+          onClick={handleCancel}
         >
           取消
         </button>

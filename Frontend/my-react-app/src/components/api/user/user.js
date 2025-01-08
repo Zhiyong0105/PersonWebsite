@@ -1,4 +1,4 @@
-import axiosInstance from '../../Axios';
+import axiosInstance from '../Axios';
 import qs from 'qs';
 
 // 用户登录
@@ -17,7 +17,19 @@ export const login = async (username, password) => {
 
 // 用户登出
 export const logout = async () => {
-  return await axiosInstance.post('/user/logout');
+  try {
+    const response = await axiosInstance.post('/user/logout');
+    // 如果成功，清除本地存储
+    if (response.data.code === 200) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+      sessionStorage.removeItem('loginSource');
+    }
+    return response;
+  } catch (error) {
+    console.error('Logout failed:', error);
+    throw error;
+  }
 };
 
 // GitHub OAuth 验证 token
@@ -105,6 +117,10 @@ const wrapAPI = (apiCall) => {
   return async (...args) => {
     try {
       const response = await apiCall(...args);
+      // 对于登出请求，即使返回 200 也不要返回 data
+      if (response.config?.url === '/user/logout') {
+        return response.data;
+      }
       return handleResponse(response);
     } catch (error) {
       return handleError(error);

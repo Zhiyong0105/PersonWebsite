@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axiosInstance from './Axios';
+import { articleAPI } from './api/article/article';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import CommentItem from './CommentItem';
 
@@ -10,35 +10,67 @@ export default function Comments({ articleId }) {
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
 
-  // 添加 useEffect 来加载评论
-  useEffect(() => {
-    fetchComments(pageNum);
-  }, [articleId, pageNum]); // 依赖项添加 articleId 和 pageNum
-
   // 获取评论列表
   const fetchComments = async (page) => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get('/comment/getComment', {
-        params: { 
-          type: 0,  // 默认类型为0
-          typeId: articleId,
-          pageNum: page, 
-          pageSize 
-        }
+      const data = await articleAPI.getComments({ 
+        type: 1,
+        typeId: articleId,
+        pageNum: page, 
+        pageSize 
       });
       
-      if (response.data.code === 200) {
-        const {page,total} = response.data.data
-        setComments(page);
-        setTotal(total); // 或者从后端获取总数
-      }
+      // 处理评论数据，构建父子关系
+const commentMap = new Map();
+const rootComments = [];
+
+// 将所有评论放入 Map 中，并初始化 children 数组
+data.page.forEach(comment => {
+  comment.children = [];
+  commentMap.set(comment.id, comment);
+});
+
+// 构建父子关系
+data.page.forEach(comment => {
+  if (comment.parentId && commentMap.has(comment.parentId)) {
+    // 如果有有效的父评论，将当前评论添加到父评论的 children 中
+    commentMap.get(comment.parentId).children.push(comment);
+  } else {
+    // 如果没有父评论或父评论无效，则视为根评论
+    rootComments.push(comment);
+  }
+});
+
+      setComments(rootComments);
+      setTotal(data.total);
     } catch (error) {
       console.error('Failed to fetch comments:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  // 添加评论
+  const handleAddComment = async (content, parentId = null) => {
+    try {
+      await articleAPI.addComment({
+        typeId: articleId,
+        type: 0,
+        content,
+        parentId
+      });
+      // 刷新评论列表，回到第一页
+      setPageNum(1);
+      await fetchComments(1);
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments(pageNum);
+  }, [articleId, pageNum]);
 
   return (
     <div className="mt-8 border-t pt-8">
@@ -49,30 +81,46 @@ export default function Comments({ articleId }) {
 
       {/* 评论列表 */}
       <div className="space-y-6">
-        {comments.map(comment => (
-          <CommentItem key={comment.id} comment={comment} />
-        ))}
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="loading loading-spinner loading-lg text-primary"></div>
+          </div>
+        ) : comments.length > 0 ? (
+          comments.map(comment => (
+            <CommentItem 
+              key={comment.id} 
+              comment={comment}
+              onReply={handleAddComment}
+              depth={0}
+            />
+          ))
+        ) : (
+          <div className="text-center py-8 text-base-content/60">
+            暂无评论，来说两句吧~
+          </div>
+        )}
       </div>
 
       {/* 分页 */}
       {total > pageSize && (
         <div className="flex justify-center mt-8">
-          <div className="flex items-center gap-2">
-            <PaginationButton
+          <div className="join">
+            <button
+              className="join-item btn btn-sm"
               onClick={() => setPageNum(prev => Math.max(1, prev - 1))}
               disabled={pageNum === 1 || loading}
             >
               <IoChevronBack className="w-4 h-4" />
-              <span>上一页</span>
-            </PaginationButton>
-
-            <PaginationButton
+              上一页
+            </button>
+            <button
+              className="join-item btn btn-sm"
               onClick={() => setPageNum(prev => Math.min(Math.ceil(total / pageSize), prev + 1))}
               disabled={pageNum === Math.ceil(total / pageSize) || loading}
             >
-              <span>下一页</span>
+              下一页
               <IoChevronForward className="w-4 h-4" />
-            </PaginationButton>
+            </button>
           </div>
         </div>
       )}

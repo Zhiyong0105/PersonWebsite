@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "./Axios";
-import qs from "qs";
+import { userAPI } from './api/user/user';
 
 export default function LoginModal({ isOpen, onClose, onLogin }) {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -15,53 +14,31 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
     event.preventDefault();
     setError("");
 
-    const formData = {
-      username: event.target.email.value,
-      password: event.target.password.value,
-    };
-
     try {
-      const response = await axiosInstance.post(
-        "/user/login",
-        qs.stringify(formData),
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
+      const response = await userAPI.login(
+        event.target.email.value,
+        event.target.password.value
       );
-
-      const { code, msg, data } = response.data;
-
-      if (code === 200) {
-        const isAdmin = formData.username === 'string1' && formData.password === '123456';
-        
-        const userInfo = {
-          ...data,
-          username: formData.username,
-          role: isAdmin ? 'admin' : 'guest',
-          email: `${formData.username}@example.com`
-        };
-
-        // 先保存数据
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userInfo", JSON.stringify(userInfo));
-        
-        // 更新父组件状态
-        onLogin?.(userInfo);
-        
-        // 最后再进行导航
-        if (isAdmin) {
-          navigate("/admin");
-        } else {
-          navigate("/admin/user-center");
-        }
-      } else {
-        setError(msg || "登录失败，请重试");
-      }
+      
+      // response 已经是处理过的数据，不需要 response.data
+      const { token, username, email } = response;
+      
+      // 保存用户信息
+      localStorage.setItem("token", token);
+      localStorage.setItem("userInfo", JSON.stringify({
+        username,
+        role: 'guest',
+        email
+      }));
+      
+      // 更新父组件状态
+      onLogin?.();
+      
+      // 重定向
+      navigate("/admin/user-center");
+      
     } catch (error) {
-      console.error("Login error:", error);
-      setError(error.response?.data?.msg || "登录失败，请检查网络连接");
+      setError(error.message || "登录失败，请重试");
     }
   };
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "./Axios";
 import Editor from "./Editor";
+import { articleAPI } from './api/article/article';
 
 export default function ArticleEditor() {
   const { id } = useParams();
@@ -29,21 +29,16 @@ export default function ArticleEditor() {
     const fetchArticle = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get(`/article/${id}`);
-        if (response.data.code === 200) {
-          const articleData = response.data.data;
-          // 确保所有字段都有默认值
-          setArticle({
-            articleTitle: articleData.articleTitle || "",
-            articleContent: articleData.articleContent || "",
-            articleSummary: articleData.articleSummary || "",
-            category: articleData.category || "",
-            status: articleData.status || "public",
-            id: articleData.id // 保存文章ID
-          });
-        } else {
-          throw new Error(response.data.msg || "Failed to fetch article");
-        }
+        const articleData = await articleAPI.getArticle(id);
+        // 确保所有字段都有默认值
+        setArticle({
+          articleTitle: articleData.articleTitle || "",
+          articleContent: articleData.articleContent || "",
+          articleSummary: articleData.articleSummary || "",
+          category: articleData.category || "",
+          status: articleData.status || "public",
+          id: articleData.id // 保存文章ID
+        });
       } catch (err) {
         setError(err.message);
         console.error("Error fetching article:", err);
@@ -53,7 +48,7 @@ export default function ArticleEditor() {
     };
 
     fetchArticle();
-  }, [id]); // 依赖于 id 参数
+  }, [id]);
 
   // 处理文章保存
   const handleSave = async (isDraft = false) => {
@@ -63,16 +58,13 @@ export default function ArticleEditor() {
         status: isDraft ? 'draft' : 'public'
       };
 
-      const response = await axiosInstance[id ? 'put' : 'post'](
-        id ? '/article/auth/back/update' : '/article/auth/back/create',
-        articleData
-      );
-
-      if (response.data.code === 200) {
-        navigate("/admin/articles");
+      if (id) {
+        await articleAPI.updateArticle(articleData);
       } else {
-        throw new Error(response.data.msg || "Failed to save article");
+        await articleAPI.createArticle(articleData);
       }
+
+      navigate("/admin/articles");
     } catch (err) {
       setError(err.message);
       console.error("Error saving article:", err);

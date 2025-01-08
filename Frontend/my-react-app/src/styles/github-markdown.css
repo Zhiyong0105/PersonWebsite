@@ -1,0 +1,118 @@
+.markdown-body {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  margin: 0;
+  color: var(--base-content);
+  background-color: var(--base-100);
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.markdown-body h1 {
+  margin: 2em 0 1em;
+  padding-bottom: .3em;
+  font-size: 2em;
+  border-bottom: 1px solid var(--base-300);
+}
+
+.markdown-body h2 {
+  margin: 1.5em 0 .5em;
+  padding-bottom: .3em;
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--base-300);
+}
+
+.markdown-body h3 {
+  margin: 1.5em 0 .5em;
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  margin: 1.5em 0 .5em;
+  font-size: 1em;
+}
+
+.markdown-body p {
+  margin: 1em 0;
+  line-height: 1.75;
+}
+
+.markdown-body blockquote {
+  margin: 1em 0;
+  padding: 0 1em;
+  color: var(--base-content/70);
+  border-left: .25em solid var(--base-300);
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.markdown-body li {
+  margin: 0.25em 0;
+}
+
+.markdown-body code {
+  padding: .2em .4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: var(--base-200);
+  border-radius: 6px;
+  font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+}
+
+.markdown-body pre {
+  margin: 1em 0;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: var(--base-200);
+  border-radius: 6px;
+}
+
+.markdown-body pre code {
+  padding: 0;
+  background-color: transparent;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  margin: 1em 0;
+  border-radius: 6px;
+}
+
+.markdown-body hr {
+  height: .25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: var(--base-300);
+  border: 0;
+}
+
+.markdown-body table {
+  margin: 1em 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid var(--base-300);
+}
+
+.markdown-body table tr {
+  background-color: var(--base-100);
+  border-top: 1px solid var(--base-300);
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: var(--base-200/50);
+} 
