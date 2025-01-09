@@ -208,28 +208,7 @@ export default function Home() {
       {/* Footer */}
       <Footer />
 
-      {/* 返回顶部按钮 - 添加条件渲染 */}
-      <motion.div
-        className="fixed right-6 bottom-6 z-50"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ 
-          opacity: showScrollTop ? 1 : 0,
-          scale: showScrollTop ? 1 : 0.5,
-          pointerEvents: showScrollTop ? "auto" : "none"
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        <motion.div
-          className="p-3 bg-base-100/80 backdrop-blur-sm rounded-full shadow-lg 
-                   border border-base-200/50 cursor-pointer group"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <FloatingButton />
-          <div className="absolute inset-0 bg-primary/10 rounded-full blur-md 
-                        opacity-0 group-hover:opacity-100 transition-opacity" />
-        </motion.div>
-      </motion.div>
+
     </div>
   );
 }

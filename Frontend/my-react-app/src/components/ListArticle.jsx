@@ -71,8 +71,10 @@ export default function ListArticle() {
   // 处理 GitHub 登录
   useEffect(() => {
     const verifyGithubLogin = async () => {
-      const code = new URLSearchParams(window.location.search).get('code');
-      if (code) {
+      // const code = new URLSearchParams(window.location.search).get('code');
+      const token = localStorage.getItem('token');
+      const loginSource = sessionStorage.getItem('loginSource');
+      if (!token && loginSource === 'github') {
         try {
           const data = await userAPI.verifyGithubToken();
           

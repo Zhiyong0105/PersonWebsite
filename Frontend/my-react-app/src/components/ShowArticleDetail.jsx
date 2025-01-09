@@ -31,6 +31,17 @@ const extractHeadings = (markdown) => {
   return headings;
 };
 
+// 添加一个格式化时间的函数
+const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
 export default function ShowArticleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -208,6 +219,53 @@ export default function ShowArticleDetail() {
                 <IoArrowBack className="w-4 h-4" />
                 <span className="ml-1">返回</span>
               </button>
+            </div>
+
+            {/* 文章标题区域 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-8 bg-primary/30 rounded-full" />
+                <div>
+                  <h1 className="text-3xl font-bold text-base-content">
+                    {article.articleTitle}
+                  </h1>
+                  {article.articleSummary && (
+                    <p className="mt-2 text-base-content/60">
+                      {article.articleSummary}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* 文章元信息 */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-base-content/60">
+                {article.updateTime && article.updateTime !== article.createTime ? (
+                  <>
+                    <time className="flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      发布于 {formatDateTime(article.createTime)}
+                    </time>
+                    <time className="flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      最后编辑于 {formatDateTime(article.updateTime)}
+                    </time>
+                  </>
+                ) : (
+                  <time className="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    发布于 {formatDateTime(article.createTime)}
+                  </time>
+                )}
+              </div>
+
+              {/* 分隔线 */}
+              <div className="mt-6 border-t border-base-200/50"></div>
             </div>
 
             {/* 文章主体 */}

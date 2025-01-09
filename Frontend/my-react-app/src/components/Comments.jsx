@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { articleAPI } from './api/article/article';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import CommentItem from './CommentItem';
+import CommentBox from './CommentBox';
 
 export default function Comments({ articleId }) {
   const [comments, setComments] = useState([]);
@@ -22,25 +23,45 @@ export default function Comments({ articleId }) {
       });
       
       // 处理评论数据，构建父子关系
-const commentMap = new Map();
-const rootComments = [];
+      const commentMap = new Map();
+      const rootComments = [];
 
-// 将所有评论放入 Map 中，并初始化 children 数组
-data.page.forEach(comment => {
-  comment.children = [];
-  commentMap.set(comment.id, comment);
-});
+      // 第一次遍历：初始化所有评论
+      data.page.forEach(comment => {
+        // 深拷贝评论对象，避免直接修改原始数据
+        const commentCopy = { ...comment, children: [] };
+        commentMap.set(comment.id, commentCopy);
+      });
 
-// 构建父子关系
-data.page.forEach(comment => {
-  if (comment.parentId && commentMap.has(comment.parentId)) {
-    // 如果有有效的父评论，将当前评论添加到父评论的 children 中
-    commentMap.get(comment.parentId).children.push(comment);
-  } else {
-    // 如果没有父评论或父评论无效，则视为根评论
-    rootComments.push(comment);
-  }
-});
+      // 第二次遍历：构建父子关系
+      data.page.forEach(comment => {
+        const commentCopy = commentMap.get(comment.id);
+        if (comment.parentId && commentMap.has(comment.parentId)) {
+          // 如果有父评论，添加到父评论的 children 中
+          const parentComment = commentMap.get(comment.parentId);
+          parentComment.children.push(commentCopy);
+          // 更新父评论的子评论数量
+          parentComment.childCommentCount = (parentComment.childCommentCount || 0) + 1;
+        } else {
+          // 如果没有父评论或父评论不在当前页面，作为根评论
+          rootComments.push(commentCopy);
+        }
+      });
+
+      // 按时间倒序排序根评论
+      rootComments.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
+
+      // 递归排序所有子评论
+      const sortComments = (comments) => {
+        comments.forEach(comment => {
+          if (comment.children?.length > 0) {
+            comment.children.sort((a, b) => new Date(b.createTime) - new Date(a.createTime));
+            sortComments(comment.children);
+          }
+        });
+      };
+
+      sortComments(rootComments);
 
       setComments(rootComments);
       setTotal(data.total);
@@ -72,11 +93,45 @@ data.page.forEach(comment => {
     fetchComments(pageNum);
   }, [articleId, pageNum]);
 
+  // 检查登录状态
+  const isLoggedIn = !!localStorage.getItem('token');
+
+  // 处理登录点击
+  const handleLoginClick = () => {
+    // 触发全局登录事件
+    const event = new CustomEvent('showLoginModal', {
+      detail: { source: 'comments' }
+    });
+    window.dispatchEvent(event);
+  };
+
+  useEffect(() => {
+    // 监听登录成功事件
+    const handleLoginSuccess = () => {
+      fetchComments(pageNum);
+    };
+
+    window.addEventListener('loginSuccess', handleLoginSuccess);
+    return () => {
+      window.removeEventListener('loginSuccess', handleLoginSuccess);
+    };
+  }, [pageNum]);
+
   return (
     <div className="mt-8 border-t pt-8">
       {/* 评论统计 */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold">评论 ({total})</h2>
+      </div>
+
+      {/* 评论框 */}
+      <div className="mb-8">
+        <CommentBox
+          onSubmit={() => fetchComments(1)}
+          isLoggedIn={isLoggedIn}
+          onLoginClick={handleLoginClick}
+          articleId={articleId}
+        />
       </div>
 
       {/* 评论列表 */}
@@ -90,8 +145,10 @@ data.page.forEach(comment => {
             <CommentItem 
               key={comment.id} 
               comment={comment}
-              onReply={handleAddComment}
-              depth={0}
+              articleId={articleId}
+              onReplySuccess={() => fetchComments(pageNum)}
+              onLoginClick={handleLoginClick}
+              isLoggedIn={isLoggedIn}
             />
           ))
         ) : (

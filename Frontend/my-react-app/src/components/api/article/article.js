@@ -21,7 +21,7 @@ export const getComments = async (params) => {
 
 // 添加评论
 export const addComment = async (commentData) => {
-  return await axiosInstance.post('/comment/add', commentData);
+  return await axiosInstance.post('/comment/auth/add', commentData);
 };
 
 // 获取文章列表
