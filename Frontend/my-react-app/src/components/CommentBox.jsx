@@ -34,7 +34,7 @@ export default function CommentBox({ onSubmit, isLoggedIn, onLoginClick, article
 
   const handleLoginClick = () => {
     setIsClicking(true);
-    window.dispatchEvent(new Event('showLogin'));
+    onLoginClick?.();
     setTimeout(() => setIsClicking(false), 300);
   };
 
@@ -65,7 +65,7 @@ export default function CommentBox({ onSubmit, isLoggedIn, onLoginClick, article
                   relative group cursor-pointer
                   bg-base-100/95 backdrop-blur-[2px] 
                   rounded-lg p-6 
-                  border border-base-300
+                  border border-base-20
                   transition-all duration-300
                   hover:border-primary/30 hover:shadow-lg
                   active:scale-95

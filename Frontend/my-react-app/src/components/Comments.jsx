@@ -3,6 +3,7 @@ import { articleAPI } from './api/article/article';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import CommentItem from './CommentItem';
 import CommentBox from './CommentBox';
+import LoginModal from './LoginModal';
 
 export default function Comments({ articleId }) {
   const [comments, setComments] = useState([]);
@@ -10,6 +11,7 @@ export default function Comments({ articleId }) {
   const [pageNum, setPageNum] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // 获取评论列表
   const fetchComments = async (page) => {
@@ -98,11 +100,16 @@ export default function Comments({ articleId }) {
 
   // 处理登录点击
   const handleLoginClick = () => {
-    // 触发全局登录事件
-    const event = new CustomEvent('showLoginModal', {
-      detail: { source: 'comments' }
-    });
-    window.dispatchEvent(event);
+    setShowLoginModal(true);
+  };
+
+  // 处理登录成功
+  const handleLoginSuccess = () => {
+    setShowLoginModal(false);
+    // 触发登录状态改变事件
+    window.dispatchEvent(new Event('loginStateChanged'));
+    // 刷新评论列表
+    fetchComments(pageNum);
   };
 
   useEffect(() => {
@@ -181,6 +188,13 @@ export default function Comments({ articleId }) {
           </div>
         </div>
       )}
+
+      {/* 登录模态框 */}
+      <LoginModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={handleLoginSuccess}
+      />
     </div>
   );
 } 
