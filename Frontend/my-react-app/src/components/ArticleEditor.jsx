@@ -16,7 +16,7 @@ export default function ArticleEditor() {
     articleContent: "",
     articleSummary: "",
     category: "",
-    status: "public"
+    status: 1
   });
 
   // 获取文章详情
@@ -36,7 +36,7 @@ export default function ArticleEditor() {
           articleContent: articleData.articleContent || "",
           articleSummary: articleData.articleSummary || "",
           category: articleData.category || "",
-          status: articleData.status || "public",
+          status:  1,
           id: articleData.id // 保存文章ID
         });
       } catch (err) {
@@ -55,7 +55,7 @@ export default function ArticleEditor() {
     try {
       const articleData = {
         ...article,
-        status: isDraft ? 'draft' : 'public'
+        status: 1
       };
 
       if (id) {
@@ -177,49 +177,6 @@ export default function ArticleEditor() {
                 </div>
                 <div className="collapse-content px-4 pb-4">
                   <div className="space-y-3">
-                    {/* 标题输入框 */}
-                    <div className="form-control">
-                      <label className="label py-1">
-                        <span className="label-text">文章标题</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="input input-bordered input-sm"
-                        value={article.articleTitle}
-                        onChange={(e) => handleChange('articleTitle')(e.target.value)}
-                        placeholder="输入文章标题"
-                      />
-                    </div>
-
-                    {/* 摘要输入框 */}
-                    <div className="form-control">
-                      <label className="label py-1">
-                        <span className="label-text">文章摘要</span>
-                      </label>
-                      <textarea
-                        className="textarea textarea-bordered text-sm"
-                        value={article.articleSummary}
-                        onChange={(e) => handleChange('articleSummary')(e.target.value)}
-                        placeholder="输入文章摘要"
-                        rows={3}
-                      />
-                    </div>
-
-                    {/* 发布状态 */}
-                    <div className="form-control">
-                      <label className="label py-1">
-                        <span className="label-text">发布状态</span>
-                      </label>
-                      <select 
-                        className="select select-bordered select-sm w-full"
-                        value={article.status}
-                        onChange={(e) => handleChange('status')(e.target.value)}
-                      >
-                        <option value="public">公开发布</option>
-                        <option value="private">私密发布</option>
-                        <option value="draft">草稿</option>
-                      </select>
-                    </div>
 
                     {/* 分类输入框 */}
                     <div className="form-control">

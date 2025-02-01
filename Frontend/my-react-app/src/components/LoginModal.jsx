@@ -27,7 +27,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
       localStorage.setItem("token", token);
       localStorage.setItem("userInfo", JSON.stringify({
         username,
-        role: 'guest',
+        role: 'admin',
         email
       }));
       

@@ -26,7 +26,7 @@ export default function Editor() {
         articleTitle: titleValue,
         articleContent: value,
         articleSummary: summaryValue,
-        status: 'public'
+        status: 1
       });
       
       alert("发布成功！");

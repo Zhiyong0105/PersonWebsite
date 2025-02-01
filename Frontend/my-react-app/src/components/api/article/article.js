@@ -6,7 +6,7 @@ export const getArticle = async (id) => {
 
 // 创建文章
 export const createArticle = async (articleData) => {
-  return await axiosInstance.post('/article/auth/back/create', articleData);
+  return await axiosInstance.post('/article/publish', articleData);
 };
 
 // 更新文章
