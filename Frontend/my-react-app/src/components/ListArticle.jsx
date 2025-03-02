@@ -63,9 +63,7 @@ export default function ListArticle() {
 
   // 页码变化时获取数据
   useEffect(() => {
-    if (pageNum > 1) {
-      handleListArticle(pageNum);
-    }
+    handleListArticle(pageNum);
   }, [pageNum]);
 
   // 处理 GitHub 登录
