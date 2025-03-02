@@ -1,14 +1,23 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Editor from "./Editor";
 import { articleAPI } from './api/article/article';
+import { XMarkIcon, PlusIcon, EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function ArticleEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [categoryInput, setCategoryInput] = useState("");
+  const [viewMode, setViewMode] = useState(location.state?.preview ? 'preview' : 'edit');
   
   // 文章数据
   const [article, setArticle] = useState({
@@ -16,6 +25,7 @@ export default function ArticleEditor() {
     articleContent: "",
     articleSummary: "",
     category: "",
+    tags: [],
     status: 1
   });
 
@@ -36,7 +46,8 @@ export default function ArticleEditor() {
           articleContent: articleData.articleContent || "",
           articleSummary: articleData.articleSummary || "",
           category: articleData.category || "",
-          status:  1,
+          tags: articleData.tags || [],
+          status: 1,
           id: articleData.id // 保存文章ID
         });
       } catch (err) {
@@ -79,6 +90,42 @@ export default function ArticleEditor() {
     }));
   };
 
+  // 添加标签
+  const addTag = () => {
+    if (!categoryInput.trim()) return;
+    
+    // 检查是否已存在相同标签
+    if (!article.tags.includes(categoryInput.trim())) {
+      setArticle(prev => ({
+        ...prev,
+        tags: [...prev.tags, categoryInput.trim()]
+      }));
+    }
+    
+    setCategoryInput("");
+  };
+
+  // 删除标签
+  const removeTag = (tagToRemove) => {
+    setArticle(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
+  // 处理按键事件
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  // 切换视图模式
+  const toggleViewMode = () => {
+    setViewMode(prev => prev === 'edit' ? 'preview' : 'edit');
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -102,6 +149,24 @@ export default function ArticleEditor() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              {id && (
+                <button 
+                  className="btn btn-outline btn-sm gap-2"
+                  onClick={toggleViewMode}
+                >
+                  {viewMode === 'edit' ? (
+                    <>
+                      <EyeIcon className="w-4 h-4" />
+                      预览模式
+                    </>
+                  ) : (
+                    <>
+                      <PencilIcon className="w-4 h-4" />
+                      编辑模式
+                    </>
+                  )}
+                </button>
+              )}
               <button 
                 className="btn btn-ghost btn-sm"
                 onClick={() => handleSave(true)}
@@ -136,12 +201,99 @@ export default function ArticleEditor() {
           <div className="h-full flex lg:flex-row flex-col gap-4 lg:gap-6">
             {/* 主编辑区域 */}
             <div className="flex-1 p-4 lg:p-6 overflow-auto">
-              <div className="bg-base-100 rounded-lg h-auto min-h-full">
-                <Editor
-                  value={article.articleContent}
-                  onChange={handleChange('articleContent')}
-                />
-              </div>
+              {viewMode === 'edit' ? (
+                <div className="bg-base-100 rounded-lg h-auto min-h-full p-6">
+                  <div className="max-w-4xl mx-auto">
+                    {/* 文章标题输入框 - 仅在编辑模式显示 */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium mb-2">文章标题</label>
+                      <input
+                        type="text"
+                        className="input input-bordered w-full text-xl font-bold"
+                        value={article.articleTitle}
+                        onChange={(e) => handleChange('articleTitle')(e.target.value)}
+                        placeholder="请输入文章标题..."
+                      />
+                    </div>
+                    
+                    {/* 文章摘要输入框 */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-medium mb-2">文章摘要</label>
+                      <textarea
+                        className="textarea textarea-bordered w-full h-24"
+                        value={article.articleSummary}
+                        onChange={(e) => handleChange('articleSummary')(e.target.value)}
+                        placeholder="请输入文章摘要..."
+                      />
+                    </div>
+                    
+                    {/* Markdown 编辑器 */}
+                    <div>
+                      <label className="block text-sm font-medium mb-2">文章内容</label>
+                      <Editor
+                        value={article.articleContent}
+                        onChange={handleChange('articleContent')}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-base-100 rounded-lg h-auto min-h-full">
+                  <div className="p-6 max-w-4xl mx-auto">
+                    <h1 className="text-2xl font-bold mb-4">{article.articleTitle}</h1>
+                    
+                    {/* 文章摘要 */}
+                    {article.articleSummary && (
+                      <div className="bg-base-200 p-4 rounded-lg mb-6 text-base-content/80 italic">
+                        {article.articleSummary}
+                      </div>
+                    )}
+                    
+                    {/* 文章元数据 */}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {article.category && (
+                        <div className="badge badge-outline">
+                          {article.category}
+                        </div>
+                      )}
+                      {article.tags && article.tags.map((tag, index) => (
+                        <div key={index} className="badge badge-primary badge-outline">
+                          {tag}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* 文章内容预览 */}
+                    <div className="prose prose-lg max-w-none">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          code({node, inline, className, children, ...props}) {
+                            const match = /language-(\w+)/.exec(className || '');
+                            return !inline && match ? (
+                              <SyntaxHighlighter
+                                style={vscDarkPlus}
+                                language={match[1]}
+                                PreTag="div"
+                                {...props}
+                              >
+                                {String(children).replace(/\n$/, '')}
+                              </SyntaxHighlighter>
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          }
+                        }}
+                      >
+                        {article.articleContent}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 侧边设置面板 */}
@@ -176,8 +328,7 @@ export default function ArticleEditor() {
                   <h3 className="text-sm font-medium">文章设置</h3>
                 </div>
                 <div className="collapse-content px-4 pb-4">
-                  <div className="space-y-3">
-
+                  <div className="space-y-4">
                     {/* 分类输入框 */}
                     <div className="form-control">
                       <label className="label py-1">
@@ -190,6 +341,52 @@ export default function ArticleEditor() {
                         onChange={(e) => handleChange('category')(e.target.value)}
                         placeholder="输入分类"
                       />
+                    </div>
+
+                    {/* 标签输入区域 */}
+                    <div className="form-control">
+                      <label className="label py-1">
+                        <span className="label-text">标签</span>
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          className="input input-bordered input-sm flex-1"
+                          value={categoryInput}
+                          onChange={(e) => setCategoryInput(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          placeholder="输入标签后按回车"
+                        />
+                        <button 
+                          className="btn btn-sm btn-square"
+                          onClick={addTag}
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                      
+                      {/* 标签展示区域 */}
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {article.tags.map((tag, index) => (
+                          <div 
+                            key={index} 
+                            className="badge badge-primary gap-1 py-3"
+                          >
+                            {tag}
+                            <button 
+                              className="btn btn-xs btn-circle btn-ghost"
+                              onClick={() => removeTag(tag)}
+                            >
+                              <XMarkIcon className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                        {article.tags.length === 0 && (
+                          <div className="text-sm text-base-content/60 italic">
+                            暂无标签
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

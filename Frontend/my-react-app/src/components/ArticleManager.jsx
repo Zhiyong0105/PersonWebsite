@@ -124,6 +124,11 @@ export default function ArticleManager() {
     navigate(`/admin/editor/${articleId}`);
   };
 
+  // 处理预览并编辑
+  const handlePreviewEdit = (articleId) => {
+    navigate(`/admin/editor/${articleId}`, { state: { preview: true } });
+  };
+
   // 处理新建文章
   const handleCreate = () => {
     navigate('/admin/editor');
@@ -244,11 +249,7 @@ export default function ArticleManager() {
                     <td>
                       <div 
                         className="cursor-pointer group"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleEdit(article.id);
-                        }}
+                        onClick={() => handlePreviewEdit(article.id)}
                       >
                         <div className="font-medium group-hover:text-primary transition-colors">
                           {article.articleTitle}
