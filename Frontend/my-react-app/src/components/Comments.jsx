@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { articleAPI } from './api/article/article';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { FaRegCommentDots } from "react-icons/fa";
 import CommentItem from './CommentItem';
 import CommentBox from './CommentBox';
 import LoginModal from './LoginModal';
@@ -125,10 +126,12 @@ export default function Comments({ articleId }) {
   }, [pageNum]);
 
   return (
-    <div className="mt-8 border-t pt-8">
+    <div className="mt-8 pt-8">
       {/* 评论统计 */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold">评论 ({total})</h2>
+      <div className="flex items-center mb-6">
+        <FaRegCommentDots className="text-pink-500 mr-2 text-xl" />
+        <h2 className="text-lg font-bold text-gray-800">评论</h2>
+        <span className="text-gray-400 ml-2 text-sm">({total})</span>
       </div>
 
       {/* 评论框 */}
@@ -145,7 +148,7 @@ export default function Comments({ articleId }) {
       <div className="space-y-6">
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="loading loading-spinner loading-lg text-primary"></div>
+            <div className="loading loading-spinner loading-lg text-pink-500"></div>
           </div>
         ) : comments.length > 0 ? (
           comments.map(comment => (
@@ -159,8 +162,8 @@ export default function Comments({ articleId }) {
             />
           ))
         ) : (
-          <div className="text-center py-8 text-base-content/60">
-            暂无评论，来说两句吧~
+          <div className="text-center py-12 text-gray-400 bg-gray-50 rounded-lg">
+            暂无评论，快来抢沙发吧~
           </div>
         )}
       </div>
@@ -168,22 +171,35 @@ export default function Comments({ articleId }) {
       {/* 分页 */}
       {total > pageSize && (
         <div className="flex justify-center mt-8">
-          <div className="join">
+          <div className="flex rounded-full bg-gray-50 p-1">
             <button
-              className="join-item btn btn-sm"
+              className={`
+                px-3 py-1.5 rounded-full text-sm flex items-center
+                ${pageNum === 1 || loading 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'}
+              `}
               onClick={() => setPageNum(prev => Math.max(1, prev - 1))}
               disabled={pageNum === 1 || loading}
             >
-              <IoChevronBack className="w-4 h-4" />
+              <IoChevronBack className="w-4 h-4 mr-1" />
               上一页
             </button>
+            <div className="px-3 py-1.5 text-sm text-gray-500">
+              {pageNum}/{Math.ceil(total / pageSize)}
+            </div>
             <button
-              className="join-item btn btn-sm"
+              className={`
+                px-3 py-1.5 rounded-full text-sm flex items-center
+                ${pageNum === Math.ceil(total / pageSize) || loading 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'}
+              `}
               onClick={() => setPageNum(prev => Math.min(Math.ceil(total / pageSize), prev + 1))}
               disabled={pageNum === Math.ceil(total / pageSize) || loading}
             >
               下一页
-              <IoChevronForward className="w-4 h-4" />
+              <IoChevronForward className="w-4 h-4 ml-1" />
             </button>
           </div>
         </div>

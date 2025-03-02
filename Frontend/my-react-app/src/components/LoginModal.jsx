@@ -14,31 +14,50 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
     event.preventDefault();
     setError("");
 
+    const username = event.target.username.value;
+    const password = event.target.password.value;
+
     try {
-      const response = await userAPI.login(
-        event.target.email.value,
-        event.target.password.value
-      );
+      let response;
       
-      // response 已经是处理过的数据，不需要 response.data
-      const { token, username, email } = response;
+      if (isSignUp) {
+        // 检查密码确认
+        const confirmPassword = event.target.confirmPassword.value;
+        if (password !== confirmPassword) {
+          setError("两次输入的密码不一致");
+          return;
+        }
+        
+        const email = event.target.email.value;
+        // 注册新用户
+        response = await userAPI.register({
+          username,
+          password,
+          email
+        });
+      } else {
+        // 登录已有用户
+        response = await userAPI.login(username, password);
+      }
+      
+      const { token, username: responseUsername, email } = response;
       
       // 保存用户信息
       localStorage.setItem("token", token);
       localStorage.setItem("userInfo", JSON.stringify({
-        username,
+        username: responseUsername,
         role: 'admin',
         email
       }));
       
       // 更新父组件状态
       onLogin?.();
-      
+      window.location.reload();
       // 重定向
-      navigate("/admin/user-center");
+      navigate("/article");
       
     } catch (error) {
-      setError(error.message || "登录失败，请重试");
+      setError(error.message || (isSignUp ? "注册失败，请重试" : "登录失败，请重试"));
     }
   };
 
@@ -49,8 +68,6 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
     // 重定向到后端的 OAuth2 登录端点
     window.location.href = 'http://localhost:8080/oauth2/authorization/github';
   };
-
-
 
   if (!isOpen) return null;
 
@@ -125,12 +142,24 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
               <div>
                 <input
                   type="text"
-                  name="email"
+                  name="username"
                   placeholder="用户名"
                   required
                   className="input input-bordered w-full bg-base-200 border-base-200 focus:border-primary"
                 />
               </div>
+
+              {isSignUp && (
+                <div>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="邮箱地址"
+                    required
+                    className="input input-bordered w-full bg-base-200 border-base-200 focus:border-primary"
+                  />
+                </div>
+              )}
 
               <div>
                 <input
@@ -159,7 +188,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
               </button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
+            {/* <div className="mt-6 text-center text-sm">
               <span className="text-base-content/60">
                 {isSignUp ? "已有账号?" : "还没有账号?"}
               </span>
@@ -169,7 +198,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
               >
                 {isSignUp ? "去登录" : "去注册"}
               </button>
-            </div>
+            </div> */}
 
             <p className="mt-6 text-xs text-center text-base-content/60">
               继续即表示您同意我们的
