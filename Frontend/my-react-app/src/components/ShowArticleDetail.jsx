@@ -21,10 +21,18 @@ const extractHeadings = (markdown) => {
   let match;
 
   while ((match = headingRegex.exec(markdown)) !== null) {
+    const text = match[2].trim();
+    // 生成更可靠的ID，处理特殊字符和空格
+    const id = text
+      .toLowerCase()
+      .replace(/[^\w\u4e00-\u9fa5]+/g, '-') // 保留中文字符和英文字母数字
+      .replace(/^-+|-+$/g, '') // 移除开头和结尾的连字符
+      .replace(/-{2,}/g, '-'); // 将多个连字符替换为单个
+
     headings.push({
       level: match[1].length,
-      text: match[2],
-      id: match[2].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')
+      text: text,
+      id: id
     });
   }
 
@@ -52,6 +60,8 @@ export default function ShowArticleDetail() {
   const [activeHeading, setActiveHeading] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [showToc, setShowToc] = useState(false);
+  const [tocVisible, setTocVisible] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   // 滚动进度
   const { scrollYProgress } = useScroll();
@@ -114,6 +124,25 @@ export default function ShowArticleDetail() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeHeading]);
 
+  // 添加响应式检测
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      // 在移动端自动隐藏TOC
+      if (mobile) {
+        setTocVisible(false);
+      } else {
+        setTocVisible(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // 初始化
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // TOC 组件
   const TableOfContents = ({ className }) => (
     <div className={`bg-base-100/80 backdrop-blur-sm rounded-lg shadow-lg border border-base-200/50 ${className}`}>
@@ -130,42 +159,48 @@ export default function ShowArticleDetail() {
       </div>
 
       <div className="p-4">
-        <div className="space-y-2 max-h-[calc(100vh-16rem)] overflow-y-auto">
-          {headings.map((heading, index) => (
-            <div
-              key={heading.id || index}
-              style={{ paddingLeft: `${(heading.level - 1) * 16}px` }}
-            >
-              <button
-                onClick={() => {
-                  scrollToHeading(heading.id);
-                  setShowToc(false);
-                }}
-                className={`
-                  text-left w-full px-3 py-1.5 rounded-lg transition-all
-                  group hover:bg-base-200/50
-                  ${activeHeading === heading.id 
-                    ? 'bg-primary/10 text-primary font-medium' 
-                    : 'text-base-content/70 hover:text-base-content'
-                  }
-                `}
+        {headings.length > 0 ? (
+          <div className="space-y-2 max-h-[calc(100vh-16rem)] overflow-y-auto">
+            {headings.map((heading, index) => (
+              <div
+                key={heading.id || index}
+                style={{ paddingLeft: `${(heading.level - 1) * 16}px` }}
               >
-                <div className="flex items-center gap-2">
-                  <div className={`
-                    w-1.5 h-1.5 rounded-full transition-colors
+                <button
+                  onClick={() => {
+                    scrollToHeading(heading.id);
+                    setShowToc(false);
+                  }}
+                  className={`
+                    text-left w-full px-3 py-1.5 rounded-lg transition-all
+                    group hover:bg-base-200/50
                     ${activeHeading === heading.id 
-                      ? 'bg-primary' 
-                      : 'bg-base-content/30 group-hover:bg-base-content/50'
+                      ? 'bg-primary/10 text-primary font-medium' 
+                      : 'text-base-content/70 hover:text-base-content'
                     }
-                  `} />
-                  <span className="text-sm line-clamp-1">
-                    {heading.text}
-                  </span>
-                </div>
-              </button>
-            </div>
-          ))}
-        </div>
+                  `}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`
+                      w-1.5 h-1.5 rounded-full transition-colors
+                      ${activeHeading === heading.id 
+                        ? 'bg-primary' 
+                        : 'bg-base-content/30 group-hover:bg-base-content/50'
+                      }
+                    `} />
+                    <span className="text-sm line-clamp-1">
+                      {heading.text}
+                    </span>
+                  </div>
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4 text-base-content/50 text-sm">
+            没有找到标题
+          </div>
+        )}
       </div>
     </div>
   );
@@ -274,12 +309,54 @@ export default function ShowArticleDetail() {
                 remarkPlugins={[remarkMath, remarkGfm]}
                 rehypePlugins={[rehypeHighlight, rehypeKatex, rehypeSlug]}
                 components={{
-                  h1: ({node, ...props}) => <h1 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} className="text-2xl sm:text-3xl mt-8" {...props} />,
-                  h2: ({node, ...props}) => <h2 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} className="text-xl sm:text-2xl" {...props} />,
-                  h3: ({node, ...props}) => <h3 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} className="text-lg sm:text-xl" {...props} />,
-                  h4: ({node, ...props}) => <h4 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                  h5: ({node, ...props}) => <h5 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
-                  h6: ({node, ...props}) => <h6 id={props.children[0].toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-')} {...props} />,
+                  h1: ({node, ...props}) => {
+                    const id = props.children[0].toString()
+                      .toLowerCase()
+                      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                      .replace(/^-+|-+$/g, '')
+                      .replace(/-{2,}/g, '-');
+                    return <h1 id={id} className="text-2xl sm:text-3xl mt-8" {...props} />;
+                  },
+                  h2: ({node, ...props}) => {
+                    const id = props.children[0].toString()
+                      .toLowerCase()
+                      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                      .replace(/^-+|-+$/g, '')
+                      .replace(/-{2,}/g, '-');
+                    return <h2 id={id} className="text-xl sm:text-2xl" {...props} />;
+                  },
+                  h3: ({node, ...props}) => {
+                    const id = props.children[0].toString()
+                      .toLowerCase()
+                      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                      .replace(/^-+|-+$/g, '')
+                      .replace(/-{2,}/g, '-');
+                    return <h3 id={id} className="text-lg sm:text-xl" {...props} />;
+                  },
+                  h4: ({node, ...props}) => {
+                    const id = props.children[0].toString()
+                      .toLowerCase()
+                      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                      .replace(/^-+|-+$/g, '')
+                      .replace(/-{2,}/g, '-');
+                    return <h4 id={id} {...props} />;
+                  },
+                  h5: ({node, ...props}) => {
+                    const id = props.children[0].toString()
+                      .toLowerCase()
+                      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                      .replace(/^-+|-+$/g, '')
+                      .replace(/-{2,}/g, '-');
+                    return <h5 id={id} {...props} />;
+                  },
+                  h6: ({node, ...props}) => {
+                    const id = props.children[0].toString()
+                      .toLowerCase()
+                      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                      .replace(/^-+|-+$/g, '')
+                      .replace(/-{2,}/g, '-');
+                    return <h6 id={id} {...props} />;
+                  },
                   p: ({node, ...props}) => <p className="text-sm sm:text-base" {...props} />,
                   li: ({node, ...props}) => <li className="text-sm sm:text-base" {...props} />
                 }}
@@ -293,7 +370,7 @@ export default function ShowArticleDetail() {
           </div>
 
           {/* 桌面端目录 */}
-          <div className="hidden lg:block">
+          <div className={`hidden lg:block transition-opacity duration-300 ${tocVisible ? 'opacity-100' : 'opacity-0'}`}>
             <div className="fixed top-24 right-8 w-64">
               <TableOfContents />
             </div>

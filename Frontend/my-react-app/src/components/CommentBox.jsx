@@ -60,51 +60,21 @@ export default function CommentBox({ onSubmit, isLoggedIn, onLoginClick, article
           
           {!isLoggedIn && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div 
+              <button 
+                onClick={handleLoginClick}
                 className={`
-                  relative group cursor-pointer
-                  bg-white/95 backdrop-blur-[2px] 
-                  rounded-lg p-6 
-                  border border-gray-100
-                  transition-all duration-300
-                  hover:border-pink-200 hover:shadow-md
-                  active:scale-95
-                  max-w-[280px] mx-auto
+                  flex items-center gap-2 px-4 py-2
+                  bg-pink-50 hover:bg-pink-100
+                  text-pink-500 font-medium
+                  rounded-full border border-pink-200
+                  transition-all duration-200
                   ${isClicking ? 'scale-95' : 'scale-100'}
                 `}
-                onClick={handleLoginClick}
+                type="button"
               >
-                <div className="flex flex-col items-center gap-3">
-                  <div className={`
-                    w-10 h-10 rounded-full 
-                    bg-pink-50
-                    flex items-center justify-center
-                    group-hover:scale-110 
-                    transition-transform duration-300
-                    ${isClicking ? 'scale-90' : ''}
-                  `}>
-                    <FiLock className="w-5 h-5 text-pink-500" />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="font-medium text-gray-800">
-                      登录后参与讨论
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      点击登录，发表评论
-                    </p>
-                  </div>
-                </div>
-                
-                {/* 悬浮效果装饰 */}
-                <div className={`
-                  absolute inset-0 
-                  border border-pink-200 rounded-lg 
-                  opacity-0
-                  group-hover:opacity-100
-                  transition-all duration-300
-                  ${isClicking ? 'scale-90' : 'scale-100'}
-                `}/>
-              </div>
+                <FiLock className="w-4 h-4" />
+                点击登录后发表评论
+              </button>
             </div>
           )}
         </div>
