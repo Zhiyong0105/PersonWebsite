@@ -260,12 +260,12 @@ export default function ArticleManager() {
                       </div>
                     </td>
                     <td>
-                      <div className="badge badge-success gap-1">
-                        已发布
+                      <div className={`badge ${article.status === 0 ? 'badge-warning' : 'badge-success'} gap-1`}>
+                        {article.status === 0 ? '草稿' : '已发布'}
                       </div>
                     </td>
                     <td>{article.category || '未分类'}</td>
-                    <td>{article.views || 0}</td>
+                    <td>{article.visitCount || 0}</td>
                     <td>{article.commentCount || 0}</td>
                     <td>{formatDate(article.createTime)}</td>
                     <td>

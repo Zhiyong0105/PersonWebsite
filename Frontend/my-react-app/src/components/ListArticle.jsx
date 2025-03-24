@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Blog from "../pages/Blog";
 import { LazyMotion, domAnimation, m } from 'framer-motion';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
@@ -12,9 +12,13 @@ export default function ListArticle() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const initialLoadCompleted = useRef(false);
+  const pageChangeRef = useRef(false);
 
   // 获取文章列表
   const handleListArticle = async (page) => {
+    if (loading) return; // 防止重复加载
+    
     setLoading(true);
     setError(null);
     try {
@@ -43,18 +47,23 @@ export default function ListArticle() {
     }
   };
 
-  // 监听 URL 参数变化
+  // 统一管理数据加载
   useEffect(() => {
+    // 页面首次加载或 URL 参数变化时获取数据
     const handleUrlChange = () => {
       setPageNum(1); // 重置页码
+      pageChangeRef.current = false; // 重置页码变化标记
       handleListArticle(1);
     };
 
     // 监听 popstate 事件（浏览器前进/后退）
     window.addEventListener('popstate', handleUrlChange);
 
-    // 初始加载
-    handleListArticle(pageNum);
+    // 仅在组件首次挂载时加载数据
+    if (!initialLoadCompleted.current) {
+      handleListArticle(pageNum);
+      initialLoadCompleted.current = true;
+    }
 
     return () => {
       window.removeEventListener('popstate', handleUrlChange);
@@ -63,7 +72,13 @@ export default function ListArticle() {
 
   // 页码变化时获取数据
   useEffect(() => {
-    handleListArticle(pageNum);
+    // 避免首次加载重复调用 API
+    if (initialLoadCompleted.current && pageChangeRef.current) {
+      handleListArticle(pageNum);
+    } else if (initialLoadCompleted.current) {
+      // 标记页码已变化，下次变化时才调用 API
+      pageChangeRef.current = true;
+    }
   }, [pageNum]);
 
   // 处理 GitHub 登录
@@ -158,6 +173,7 @@ export default function ListArticle() {
                     articleTitle={article.articleTitle}
                     createTime={article.createTime}
                     articleSummary={article.articleSummary}
+                    visitCount={article.visitCount/2}
                     className="group-hover:-translate-y-1 transition-transform duration-300"
                   />
                 </m.div>

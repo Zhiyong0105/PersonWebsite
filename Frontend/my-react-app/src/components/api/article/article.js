@@ -29,11 +29,26 @@ export const getArticleList = async (params) => {
   return await axiosInstance.get("/article/list", { params });
 };
 
+// 获取热门文章
+export const getHotArticles = async () => {
+  return await axiosInstance.get("/article/list/hotArticle");
+};
+
 // 删除文章
 export const deleteArticles = async (ids) => {
-  return await axiosInstance.delete("/article/auth/back/delete", {
+  return await axiosInstance.delete("/article/auth/delete", {
     data: ids  // DELETE 请求的数据需要放在 data 字段中
   });
+};
+
+// 记录文章访问
+export const recordArticleVisit = async (id) => {
+  return await axiosInstance.get(`/article/visit/${id}`);
+};
+
+// 保存文章草稿
+export const saveDraft = async (articleData) => {
+  return await axiosInstance.post('/article/auth/saveDraft', articleData);
 };
 
 // 处理响应
@@ -70,5 +85,8 @@ export const articleAPI = {
   getComments: wrapAPI(getComments),
   addComment: wrapAPI(addComment),
   getArticleList: wrapAPI(getArticleList),
-  deleteArticles: wrapAPI(deleteArticles)
+  getHotArticles: wrapAPI(getHotArticles),
+  deleteArticles: wrapAPI(deleteArticles),
+  recordArticleVisit: wrapAPI(recordArticleVisit),
+  saveDraft: wrapAPI(saveDraft)
 }; 

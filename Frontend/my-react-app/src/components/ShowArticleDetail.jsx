@@ -77,6 +77,14 @@ export default function ShowArticleDetail() {
         const data = await articleAPI.getArticle(id);
         setArticle(data);
         setHeadings(extractHeadings(data.articleContent));
+        
+        // 记录文章访问
+        try {
+          await articleAPI.recordArticleVisit(id);
+        } catch (visitErr) {
+          // 访问记录失败不影响文章显示
+          console.error("Error recording article visit:", visitErr);
+        }
       } catch (err) {
         setError(err.message);
         console.error("Error fetching article:", err);
