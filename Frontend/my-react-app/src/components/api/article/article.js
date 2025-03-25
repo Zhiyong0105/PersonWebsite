@@ -51,8 +51,33 @@ export const saveDraft = async (articleData) => {
   return await axiosInstance.post('/article/auth/saveDraft', articleData);
 };
 
+// 上传图片到MiniO
+export const uploadImage = async (imageFile) => {
+  const formData = new FormData();
+  formData.append('file', imageFile);
+  try {
+    const response = await axiosInstance.post('/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    // 直接返回原始响应数据
+    return response.data;
+  } catch (error) {
+    console.error('Image upload error:', error);
+    throw error;
+  }
+};
+
 // 处理响应
 const handleResponse = (response) => {
+  // 处理图片上传特殊返回格式 (success 和 url 字段)
+  if (response.data.success === 1 && response.data.url) {
+    return response.data;
+  }
+  
+  // 处理标准API返回格式
   if (response.data.code === 200) {
     return response.data.data;
   }
@@ -88,5 +113,6 @@ export const articleAPI = {
   getHotArticles: wrapAPI(getHotArticles),
   deleteArticles: wrapAPI(deleteArticles),
   recordArticleVisit: wrapAPI(recordArticleVisit),
-  saveDraft: wrapAPI(saveDraft)
+  saveDraft: wrapAPI(saveDraft),
+  uploadImage
 }; 
