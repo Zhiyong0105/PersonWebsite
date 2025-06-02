@@ -53,10 +53,10 @@ export default function Experience() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.2 }}
-      className="relative flex items-center mb-24"
+      className="relative flex items-center mb-12 md:mb-24"
     >
-      {/* 左侧内容 */}
-      <div className="w-1/2 pr-12 text-right">
+      {/* 桌面端左侧内容 */}
+      <div className="hidden md:block w-1/2 pr-12 text-right">
         {exp.side === "left" && (
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -76,20 +76,20 @@ export default function Experience() {
       </div>
 
       {/* 中间图标 */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+      <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 z-10">
         <motion.div
           initial={{ scale: 0 }}
           whileInView={{ scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: index * 0.2 }}
-          className="w-12 h-12 bg-base-100 rounded-full border-4 border-primary flex items-center justify-center shadow-lg"
+          className="w-10 h-10 md:w-12 md:h-12 bg-base-100 rounded-full border-3 md:border-4 border-primary flex items-center justify-center shadow-lg"
         >
-          <exp.icon className="w-5 h-5 text-primary" />
+          <exp.icon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
         </motion.div>
       </div>
 
-      {/* 右侧内容 */}
-      <div className="w-1/2 pl-12">
+      {/* 桌面端右侧内容 */}
+      <div className="hidden md:block w-1/2 pl-12">
         {exp.side === "right" && (
           <motion.div
             initial={{ opacity: 0, x: 50 }}
@@ -107,13 +107,31 @@ export default function Experience() {
           </motion.div>
         )}
       </div>
+
+      {/* 移动端内容 - 统一显示在右侧 */}
+      <div className="md:hidden w-full pl-16">
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: index * 0.2 }}
+          className="bg-base-200/50 p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs text-base-content/60">{exp.date}</span>
+          </div>
+          <h4 className="text-base font-semibold text-base-content">{exp.title}</h4>
+          <p className="text-base-content/60 mt-1 text-sm">{exp.company}</p>
+          <p className="text-base-content mt-2 text-sm">{exp.description}</p>
+        </motion.div>
+      </div>
     </motion.div>
   );
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-8 md:py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-16 text-base-content">
+        <h1 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-16 text-base-content">
           My Experience
         </h1>
 
@@ -122,11 +140,11 @@ export default function Experience() {
           {/* 中间的时间轴线 - 带动画效果 */}
           <motion.div
             style={{ scaleY }}
-            className="absolute left-1/2 h-full w-0.5 bg-primary origin-top transform -translate-x-1/2"
+            className="absolute left-4 md:left-1/2 h-full w-0.5 bg-primary origin-top transform md:-translate-x-1/2"
           />
 
           {/* 静态背景线 */}
-          <div className="absolute left-1/2 h-full w-0.5 bg-base-200 transform -translate-x-1/2" />
+          <div className="absolute left-4 md:left-1/2 h-full w-0.5 bg-base-200 transform md:-translate-x-1/2" />
 
           {experiences.map((exp, index) => (
             <TimelineItem key={index} exp={exp} index={index} />

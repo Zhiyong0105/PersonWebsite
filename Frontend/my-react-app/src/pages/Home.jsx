@@ -90,18 +90,27 @@ export default function Home() {
           <nav className="py-4">
             <div className="container mx-auto px-6">
               <div className="flex items-center justify-between">
-                {/* Logo */}
-                <motion.a 
-                  className="text-xl font-bold bg-clip-text text-transparent 
-                           bg-gradient-to-r from-primary to-secondary"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Portfolio
-                </motion.a>
+                {/* Logo 和移动端菜单融合 */}
+                <div className="flex items-center gap-3">
+                  <motion.a 
+                    className="text-xl font-bold bg-clip-text text-transparent 
+                             bg-gradient-to-r from-primary to-secondary"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Portfolio
+                  </motion.a>
+                  
+                  {/* 移动端菜单按钮 - 紧贴在 Portfolio 右侧 */}
+                  <div className="sm:hidden">
+                    <Navbar page={`#${activeSection}`} onSectionClick={scrollToSection} />
+                  </div>
+                </div>
 
-                {/* 中间导航 */}
-                <Navbar page={`#${activeSection}`} onSectionClick={scrollToSection} />
+                {/* 桌面端中间导航 */}
+                <div className="hidden sm:block">
+                  <Navbar page={`#${activeSection}`} onSectionClick={scrollToSection} />
+                </div>
 
                 {/* 右侧按钮 */}
                 <div className="flex items-center gap-4">
@@ -109,7 +118,7 @@ export default function Home() {
                   <motion.a 
                     href="/article"
                     className="px-4 py-2 rounded-full bg-primary/10 hover:bg-primary/20 
-                             text-primary transition-all duration-300"
+                             text-primary transition-all duration-300 text-sm"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >

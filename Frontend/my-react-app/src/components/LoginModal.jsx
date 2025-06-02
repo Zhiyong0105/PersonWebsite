@@ -67,6 +67,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }) {
     sessionStorage.setItem('loginSource', 'github');
     // 重定向到后端的 OAuth2 登录端点
     window.location.href = 'http://localhost:8080/oauth2/authorization/github';
+
   };
 
   if (!isOpen) return null;
