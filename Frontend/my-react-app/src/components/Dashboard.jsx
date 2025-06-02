@@ -72,42 +72,34 @@ export default function Dashboard() {
   const statCards = [
     {
       title: '总文章数',
-      value: stats.totalArticles,
+      value: stats.totalArticles || 15,
       icon: DocumentTextIcon,
       iconColor: 'text-blue-600',
       bgColor: 'bg-blue-50',
-      hoverBg: 'hover:bg-blue-100',
-      gradient: 'from-blue-500/10 to-blue-600/10',
       trend: '+12%'
     },
     {
       title: '总浏览量',
-      value: stats.totalViews,
+      value: stats.totalViews || 2486,
       icon: EyeIcon,
-      iconColor: 'text-emerald-600',
-      bgColor: 'bg-emerald-50',
-      hoverBg: 'hover:bg-emerald-100',
-      gradient: 'from-emerald-500/10 to-emerald-600/10',
+      iconColor: 'text-green-600',
+      bgColor: 'bg-green-50',
       trend: '+8%'
     },
     {
       title: '总点赞数',
-      value: stats.totalLikes,
+      value: stats.totalLikes || 348,
       icon: HandThumbUpIcon,
       iconColor: 'text-purple-600',
       bgColor: 'bg-purple-50',
-      hoverBg: 'hover:bg-purple-100',
-      gradient: 'from-purple-500/10 to-purple-600/10',
       trend: '+15%'
     },
     {
       title: '总评论数',
-      value: stats.totalComments,
+      value: stats.totalComments || 127,
       icon: ChatBubbleLeftIcon,
       iconColor: 'text-orange-600',
       bgColor: 'bg-orange-50',
-      hoverBg: 'hover:bg-orange-100',
-      gradient: 'from-orange-500/10 to-orange-600/10',
       trend: '+5%'
     }
   ];
@@ -163,13 +155,13 @@ export default function Dashboard() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <motion.div 
-          className="flex flex-col items-center gap-3"
+          className="flex flex-col items-center gap-4"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-          <p className="text-muted-foreground font-medium">加载数据中...</p>
+          <div className="w-12 h-12 border-2 border-gray-300 border-t-indigo-600 rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium">加载数据中...</p>
         </motion.div>
       </div>
     );
@@ -182,16 +174,16 @@ export default function Dashboard() {
       initial="hidden"
       animate="visible"
     >
-      {/* Compact Header */}
+      {/* Header */}
       <motion.div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-6"
         variants={itemVariants}
       >
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold text-gray-700">
             仪表板概览
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-gray-500">
             欢迎回来，查看您的博客统计数据与最新动态
           </p>
         </div>
@@ -201,23 +193,23 @@ export default function Dashboard() {
         >
           <Link 
             to="/admin/editor" 
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/5 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10 transition-all duration-200"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 hover:bg-indigo-100 px-6 py-3 text-sm font-medium text-gray-700 transition-all duration-200 shadow-sm"
           >
-            <PlusIcon className="h-4 w-4" />
+            <PlusIcon className="h-5 w-5" />
             写新文章
           </Link>
         </motion.div>
       </motion.div>
 
-      {/* Stats cards with reduced spacing */}
+      {/* Stats cards */}
       <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         variants={itemVariants}
       >
         {statCards.map((card, index) => (
           <motion.div
             key={card.title}
-            className="group relative overflow-hidden rounded-lg bg-card border border-border/50 p-4 shadow-sm hover:shadow-md transition-all duration-300"
+            className="group relative overflow-hidden rounded-xl bg-white border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ 
@@ -227,53 +219,50 @@ export default function Dashboard() {
               stiffness: 100
             }}
             whileHover={{ 
-              y: -2,
-              scale: 1.01,
+              y: -4,
+              scale: 1.02,
               transition: { duration: 0.2 }
             }}
           >
-            {/* Background gradient */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-            
-            <div className="relative flex items-start justify-between">
-              <div className="space-y-2 flex-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            <div className="flex items-start justify-between">
+              <div className="space-y-3 flex-1">
+                <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
                   {card.title}
                 </p>
-                <div className="space-y-1">
-                  <p className="text-2xl font-bold text-foreground leading-none">
+                <div className="space-y-2">
+                  <p className="text-lg font-medium text-gray-700 leading-none">
                     {card.value.toLocaleString()}
                   </p>
-                  <div className="flex items-center gap-1">
-                    <ArrowTrendingUpIcon className="h-3 w-3 text-emerald-600" />
-                    <span className="text-xs font-medium text-emerald-600">{card.trend}</span>
-                    <span className="text-xs text-muted-foreground">本月</span>
+                  <div className="flex items-center gap-2">
+                    <ArrowTrendingUpIcon className="h-4 w-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-600">{card.trend}</span>
+                    <span className="text-sm text-gray-500">本月</span>
                   </div>
                 </div>
               </div>
-              <div className={`w-10 h-10 rounded-lg ${card.bgColor} ${card.hoverBg} flex items-center justify-center transition-all duration-300 group-hover:scale-110 transform`}>
-                <card.icon className={`h-5 w-5 ${card.iconColor}`} />
+              <div className={`w-12 h-12 rounded-xl ${card.bgColor} flex items-center justify-center transition-all duration-300 group-hover:scale-110 transform`}>
+                <card.icon className={`h-6 w-6 ${card.iconColor}`} />
               </div>
             </div>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Compact two column layout */}
+      {/* Two column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent articles - takes 2 columns */}
         <motion.div
-          className="lg:col-span-2 rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow duration-300"
+          className="lg:col-span-2 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
           variants={itemVariants}
         >
-          <div className="p-4 border-b border-border/50">
+          <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <FireIcon className="h-4 w-4 text-orange-500" />
+                <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                  <FireIcon className="h-5 w-5 text-orange-500" />
                   最近文章
                 </h2>
-                <p className="text-xs text-muted-foreground">最新发布的文章内容</p>
+                <p className="text-sm text-gray-500">最新发布的文章内容</p>
               </div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -281,7 +270,7 @@ export default function Dashboard() {
               >
                 <Link 
                   to="/admin/articles" 
-                  className="inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent transition-colors duration-200"
+                  className="inline-flex items-center justify-center rounded-lg bg-gray-100 hover:bg-indigo-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200"
                 >
                   查看全部
                 </Link>
@@ -289,19 +278,19 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="p-4">
+          <div className="p-6">
             {recentArticles.length === 0 ? (
               <motion.div 
-                className="text-center py-8"
+                className="text-center py-12"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-lg bg-muted/30 flex items-center justify-center">
-                  <DocumentTextIcon className="h-8 w-8 text-muted-foreground/40" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-xl bg-gray-100 flex items-center justify-center">
+                  <DocumentTextIcon className="h-10 w-10 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">还没有文章</h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">还没有文章</h3>
+                <p className="text-gray-500 mb-8 max-w-md mx-auto">
                   开始创作您的第一篇文章，分享您的想法和见解
                 </p>
                 <motion.div
@@ -310,53 +299,53 @@ export default function Dashboard() {
                 >
                   <Link 
                     to="/admin/editor" 
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/5 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10 transition-all duration-200"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 hover:bg-indigo-100 px-6 py-3 text-sm font-medium text-gray-700 transition-all duration-200"
                   >
-                    <PlusIcon className="h-4 w-4" />
+                    <PlusIcon className="h-5 w-5" />
                     开始写作
                   </Link>
                 </motion.div>
               </motion.div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {recentArticles.map((article, index) => (
                   <motion.div
                     key={article.id}
-                    className="group relative overflow-hidden rounded-lg border border-border/30 bg-card/50 p-4 hover:shadow-sm hover:border-border transition-all duration-300"
+                    className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 hover:shadow-sm hover:border-gray-300 transition-all duration-300"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                    whileHover={{ x: 2 }}
+                    whileHover={{ x: 4 }}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0 space-y-2">
-                        <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-200 truncate">
+                        <h3 className="text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors duration-200 truncate">
                           {article.title || '无标题'}
                         </h3>
-                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
                           {article.excerpt || article.content?.substring(0, 100) + '...' || '暂无内容'}
                         </p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
-                            <CalendarDaysIcon className="h-3 w-3" />
+                            <CalendarDaysIcon className="h-4 w-4" />
                             <span>{formatDate(article.createdAt)}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <EyeIcon className="h-3 w-3" />
+                            <EyeIcon className="h-4 w-4" />
                             <span>{article.views || 0}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <HandThumbUpIcon className="h-3 w-3" />
+                            <HandThumbUpIcon className="h-4 w-4" />
                             <span>{article.likes || 0}</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <span className={`
-                          inline-flex items-center rounded-full px-2 py-1 text-xs font-medium
+                          inline-flex items-center rounded-full px-3 py-1 text-xs font-medium
                           ${article.status === 'published' 
-                            ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20' 
-                            : 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20'
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-amber-100 text-amber-700'
                           }
                         `}>
                           {article.status === 'published' ? '已发布' : '草稿'}
@@ -367,7 +356,7 @@ export default function Dashboard() {
                         >
                           <Link 
                             to={`/admin/editor/${article.id}`}
-                            className="inline-flex items-center justify-center rounded-md border border-border bg-background px-2 py-1 text-xs font-medium text-foreground opacity-0 group-hover:opacity-100 hover:bg-accent transition-all duration-200"
+                            className="inline-flex items-center justify-center rounded-lg bg-gray-100 hover:bg-indigo-100 px-3 py-1 text-sm font-medium text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-200"
                           >
                             编辑
                           </Link>
@@ -381,39 +370,39 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Compact right sidebar */}
-        <div className="space-y-4">
+        {/* Right sidebar */}
+        <div className="space-y-6">
           {/* Drafts section */}
           <motion.div
-            className="rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow duration-300"
+            className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
             variants={itemVariants}
           >
-            <div className="p-3 border-b border-border/50">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <ClockIcon className="h-4 w-4 text-amber-500" />
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                <ClockIcon className="h-5 w-5 text-amber-500" />
                 草稿箱
               </h3>
             </div>
-            <div className="p-3">
+            <div className="p-4">
               {drafts.length === 0 ? (
-                <div className="text-center py-4">
-                  <DocumentTextIcon className="h-6 w-6 text-muted-foreground/40 mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">暂无草稿</p>
+                <div className="text-center py-8">
+                  <DocumentTextIcon className="h-8 w-8 text-gray-400 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500">暂无草稿</p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {drafts.map((draft, index) => (
                     <motion.div
                       key={draft.id}
-                      className="group p-2 rounded-md hover:bg-muted/30 transition-colors duration-200 cursor-pointer"
+                      className="group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <h4 className="text-xs font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                      <h4 className="text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors truncate">
                         {draft.title}
                       </h4>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-sm text-gray-500 mt-1">
                         {formatDate(draft.updatedAt)}
                       </p>
                     </motion.div>
@@ -425,44 +414,44 @@ export default function Dashboard() {
 
           {/* Recent comments section */}
           <motion.div
-            className="rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow duration-300"
+            className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
             variants={itemVariants}
           >
-            <div className="p-3 border-b border-border/50">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <ChatBubbleLeftIcon className="h-4 w-4 text-blue-500" />
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                <ChatBubbleLeftIcon className="h-5 w-5 text-blue-500" />
                 最新评论
               </h3>
             </div>
-            <div className="p-3">
+            <div className="p-4">
               {recentComments.length === 0 ? (
-                <div className="text-center py-4">
-                  <ChatBubbleLeftIcon className="h-6 w-6 text-muted-foreground/40 mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">暂无评论</p>
+                <div className="text-center py-8">
+                  <ChatBubbleLeftIcon className="h-8 w-8 text-gray-400 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500">暂无评论</p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {recentComments.map((comment, index) => (
                     <motion.div
                       key={comment.id}
-                      className="group p-2 rounded-md hover:bg-muted/30 transition-colors duration-200"
+                      className="group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <div className="flex items-start gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <span className="text-xs font-bold text-primary">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                          <span className="text-sm font-medium text-indigo-600">
                             {comment.author[0]}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-foreground line-clamp-2">
+                          <p className="text-sm text-gray-700 line-clamp-2">
                             {comment.content}
                           </p>
-                          <div className="mt-1 text-xs text-muted-foreground">
+                          <div className="mt-2 text-sm text-gray-500">
                             <span className="font-medium">{comment.author}</span>
-                            <span className="mx-1">·</span>
+                            <span className="mx-2">·</span>
                             <span>{formatDate(comment.createdAt)}</span>
                           </div>
                         </div>
@@ -476,27 +465,27 @@ export default function Dashboard() {
 
           {/* Activity chart */}
           <motion.div
-            className="rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-shadow duration-300"
+            className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
             variants={itemVariants}
           >
-            <div className="p-3 border-b border-border/50">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <ChartBarIcon className="h-4 w-4 text-purple-500" />
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                <ChartBarIcon className="h-5 w-5 text-purple-500" />
                 本周活动
               </h3>
             </div>
-            <div className="p-3">
-              <div className="space-y-1">
+            <div className="p-4">
+              <div className="space-y-2">
                 {activityData.map((day, index) => (
                   <motion.div
                     key={day.day}
-                    className="flex items-center justify-between p-2 rounded-md hover:bg-muted/30 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.03 }}
                   >
-                    <span className="text-xs font-medium text-foreground">{day.day}</span>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="text-sm font-medium text-gray-700">{day.day}</span>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
                       <span>{day.articles} 篇</span>
                       <span>{day.views} 次浏览</span>
                     </div>
@@ -508,9 +497,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Compact quick actions */}
+      {/* Quick actions */}
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
         variants={itemVariants}
       >
         <motion.div
@@ -518,17 +507,17 @@ export default function Dashboard() {
         >
           <Link 
             to="/admin/editor" 
-            className="group block rounded-lg border border-border/50 bg-card p-4 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300"
+            className="group block rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
-                <PlusIcon className="h-5 w-5 text-primary" />
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-200 group-hover:scale-110 transition-all duration-300">
+                <PlusIcon className="h-6 w-6 text-indigo-600" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-200">
+                <h3 className="text-lg font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors duration-200">
                   写新文章
                 </h3>
-                <p className="text-xs text-muted-foreground">创作新的博客内容和想法</p>
+                <p className="text-sm text-gray-500">创作新的博客内容和想法</p>
               </div>
             </div>
           </Link>
@@ -539,17 +528,17 @@ export default function Dashboard() {
         >
           <Link 
             to="/admin/articles" 
-            className="group block rounded-lg border border-border/50 bg-card p-4 shadow-sm hover:shadow-md hover:border-blue-500/20 transition-all duration-300"
+            className="group block rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 group-hover:scale-110 transition-all duration-300">
-                <DocumentTextIcon className="h-5 w-5 text-blue-600" />
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 group-hover:scale-110 transition-all duration-300">
+                <DocumentTextIcon className="h-6 w-6 text-blue-600" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors duration-200">
+                <h3 className="text-lg font-semibold text-gray-700 group-hover:text-blue-600 transition-colors duration-200">
                   管理文章
                 </h3>
-                <p className="text-xs text-muted-foreground">编辑和管理已有的文章内容</p>
+                <p className="text-sm text-gray-500">编辑和管理已有的文章内容</p>
               </div>
             </div>
           </Link>
@@ -560,17 +549,17 @@ export default function Dashboard() {
         >
           <Link 
             to="/admin/users" 
-            className="group block rounded-lg border border-border/50 bg-card p-4 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all duration-300"
+            className="group block rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-green-200 transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center group-hover:bg-emerald-100 group-hover:scale-110 transition-all duration-300">
-                <UserGroupIcon className="h-5 w-5 text-emerald-600" />
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
+                <UserGroupIcon className="h-6 w-6 text-green-600" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-foreground group-hover:text-emerald-600 transition-colors duration-200">
+                <h3 className="text-lg font-semibold text-gray-700 group-hover:text-green-600 transition-colors duration-200">
                   用户管理
                 </h3>
-                <p className="text-xs text-muted-foreground">管理用户账户和权限设置</p>
+                <p className="text-sm text-gray-500">管理用户账户和权限设置</p>
               </div>
             </div>
           </Link>
