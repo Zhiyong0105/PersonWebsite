@@ -199,7 +199,7 @@ export default function ArticleEditor() {
             <div className="flex-1 p-4 lg:p-6 overflow-auto">
               {viewMode === 'edit' ? (
                 <div className="bg-base-100 rounded-lg h-auto min-h-full p-6">
-                  <div className="max-w-4xl mx-auto">
+                  <div className="w-full">
                     {/* 文章标题输入框 - 仅在编辑模式显示 */}
                     <div className="mb-6">
                       <label className="block text-sm font-medium mb-2">文章标题</label>
@@ -235,7 +235,7 @@ export default function ArticleEditor() {
                 </div>
               ) : (
                 <div className="bg-base-100 rounded-lg h-auto min-h-full">
-                  <div className="p-6 max-w-4xl mx-auto">
+                  <div className="p-6 w-full">
                     <h1 className="text-2xl font-bold mb-4">{article.articleTitle}</h1>
                     
                     {/* 文章摘要 */}

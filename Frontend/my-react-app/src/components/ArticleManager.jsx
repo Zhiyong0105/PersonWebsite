@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { MagnifyingGlassIcon, FunnelIcon, EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { motion } from "framer-motion";
+import { MagnifyingGlassIcon, FunnelIcon, EllipsisHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { articleAPI } from './api/article/article';
 
@@ -135,235 +136,334 @@ export default function ArticleManager() {
   };
 
   return (
-    <div className="h-full">
-      <div className="bg-base-100 rounded-xl shadow-sm h-full flex flex-col">
-        {/* 顶部操作栏 */}
-        <div className="px-4 lg:px-6 py-4 border-b border-base-200/80">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-bold text-base-content">文章管理</h1>
-              <p className="text-sm text-base-content/60 mt-1">管理和编辑您的所有文章</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <button 
-                className={`btn btn-ghost btn-sm ${selectedIds.length === 0 ? 'btn-disabled' : ''}`}
-                onClick={handleBatchDelete}
-              >
-                批量删除 {selectedIds.length > 0 && `(${selectedIds.length})`}
-              </button>
-              <button 
-                className="btn btn-primary btn-sm"
-                onClick={handleCreate}
-              >
-                新建文章
-              </button>
-            </div>
+    <motion.div 
+      className="space-y-6 w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* Header with New Article button moved to top left */}
+      <motion.div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="flex items-center gap-4">
+          <motion.button 
+            className="inline-flex items-center justify-center rounded-md border border-primary bg-primary/5 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10 transition-colors gap-2"
+            onClick={handleCreate}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <PlusIcon className="h-4 w-4" />
+            新建文章
+          </motion.button>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              文章管理
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              管理和编辑您的所有文章
+            </p>
           </div>
         </div>
+        
+        {selectedIds.length > 0 && (
+          <motion.button 
+            className="inline-flex items-center justify-center rounded-md border border-destructive bg-destructive/5 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors gap-2"
+            onClick={handleBatchDelete}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            批量删除 ({selectedIds.length})
+          </motion.button>
+        )}
+      </motion.div>
 
-        {/* 搜索和筛选栏 */}
-        <div className="p-4 border-b border-base-200/80">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/50" />
-                <input 
-                  type="text"
-                  placeholder="搜索文章..."
-                  className="input input-bordered input-sm w-full pl-9"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <div className="dropdown dropdown-end">
-                <button className="btn btn-ghost btn-sm gap-2">
-                  <FunnelIcon className="w-4 h-4" />
-                  筛选
-                </button>
-                <div className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                  <div className="p-2">
-                    <h3 className="font-medium mb-2">发布状态</h3>
-                    <div className="space-y-1">
-                      <label className="flex items-center gap-2">
-                        <input type="checkbox" className="checkbox checkbox-sm" />
-                        <span>已发布</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input type="checkbox" className="checkbox checkbox-sm" />
-                        <span>草稿</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      {/* Search and filter */}
+      <motion.div 
+        className="rounded-lg border bg-card text-card-foreground shadow-sm p-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="搜索文章标题或内容..."
+              className="flex h-9 w-full rounded-md border border-input bg-background px-10 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <FunnelIcon className="h-4 w-4 text-muted-foreground" />
+            <select 
+              className="flex h-9 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="all">全部状态</option>
+              <option value="published">已发布</option>
+              <option value="draft">草稿</option>
+            </select>
           </div>
         </div>
+        
+        <div className="flex items-center gap-6 mt-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span>总文章: {total}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <span>已发布: {articles.filter(a => a.status === 1).length}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+            <span>草稿: {articles.filter(a => a.status === 0).length}</span>
+          </div>
+        </div>
+      </motion.div>
 
-        {/* 文章列表 */}
-        <div className="flex-1 overflow-auto">
-          <table className="table table-zebra">
-            <thead>
+      {/* Article table with full-width container and enhanced styling */}
+      <motion.div 
+        className="w-full rounded-lg border bg-card shadow-sm overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="border-b bg-muted/30">
               <tr>
-                <th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">
                   <input 
                     type="checkbox" 
-                    className="checkbox checkbox-sm"
+                    className="rounded border-input"
                     checked={articles.length > 0 && selectedIds.length === articles.length}
                     onChange={handleSelectAll}
                   />
                 </th>
-                <th>文章标题</th>
-                <th>状态</th>
-                <th>分类</th>
-                <th>浏览</th>
-                <th>评论</th>
-                <th>发布时间</th>
-                <th>操作</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">文章标题</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">状态</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">分类</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">浏览</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">评论</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">发布时间</th>
+                <th className="text-left p-4 font-medium text-sm text-muted-foreground">操作</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8">
-                    <div className="loading loading-spinner loading-lg text-primary"></div>
+                  <td colSpan="8" className="text-center py-12">
+                    <motion.div 
+                      className="flex flex-col items-center gap-3"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="w-8 h-8 border-2 border-muted border-t-foreground rounded-full animate-spin"></div>
+                      <p className="text-sm text-muted-foreground">加载文章数据中...</p>
+                    </motion.div>
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-8 text-error">
-                    {error}
+                  <td colSpan="8" className="text-center py-12">
+                    <div className="text-center">
+                      <p className="text-destructive font-medium mb-2">{error}</p>
+                      <button 
+                        className="inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                        onClick={() => fetchArticles(pageNum)}
+                      >
+                        重试
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : articles.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="text-center py-12">
+                    <motion.div 
+                      className="text-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-lg bg-muted/30 flex items-center justify-center">
+                        <PlusIcon className="h-8 w-8 text-muted-foreground/40" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">还没有文章</h3>
+                      <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm">
+                        开始创作您的第一篇文章，分享您的想法和见解
+                      </p>
+                      <motion.button 
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/5 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10 transition-all duration-200"
+                        onClick={handleCreate}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <PlusIcon className="h-4 w-4" />
+                        开始写作
+                      </motion.button>
+                    </motion.div>
                   </td>
                 </tr>
               ) : (
-                articles.map((article) => (
-                  <tr key={article.id}>
-                    <td>
+                articles.map((article, index) => (
+                  <motion.tr 
+                    key={article.id}
+                    className="border-b border-border/50 hover:bg-muted/20 transition-colors duration-200 group"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ backgroundColor: "rgba(var(--muted) / 0.3)" }}
+                  >
+                    <td className="p-4">
                       <input 
                         type="checkbox" 
-                        className="checkbox checkbox-sm"
+                        className="rounded border-input"
                         checked={selectedIds.includes(article.id)}
                         onChange={() => handleSelect(article.id)}
                       />
                     </td>
-                    <td>
+                    <td className="p-4">
                       <div 
-                        className="cursor-pointer group"
+                        className="cursor-pointer group-hover:text-primary transition-colors duration-200"
                         onClick={() => handlePreviewEdit(article.id)}
                       >
-                        <div className="font-medium group-hover:text-primary transition-colors">
+                        <div className="font-medium text-foreground line-clamp-1">
                           {article.articleTitle}
                         </div>
-                        <div className="text-xs text-base-content/60">
+                        <div className="text-xs text-muted-foreground mt-1">
                           最后修改：{formatDate(article.createTime)}
                         </div>
                       </div>
                     </td>
-                    <td>
-                      <div className={`badge ${article.status === 0 ? 'badge-warning' : 'badge-success'} gap-1`}>
+                    <td className="p-4">
+                      <span className={`
+                        inline-flex items-center rounded-full px-2 py-1 text-xs font-medium
+                        ${article.status === 0 
+                          ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20' 
+                          : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20'
+                        }
+                      `}>
                         {article.status === 0 ? '草稿' : '已发布'}
+                      </span>
+                    </td>
+                    <td className="p-4 text-sm text-muted-foreground">{article.category || '未分类'}</td>
+                    <td className="p-4 text-sm text-muted-foreground">{article.visitCount || 0}</td>
+                    <td className="p-4 text-sm text-muted-foreground">{article.commentCount || 0}</td>
+                    <td className="p-4 text-sm text-muted-foreground">{formatDate(article.createTime)}</td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <motion.button 
+                          className="inline-flex items-center justify-center rounded-md border border-border bg-background px-2 py-1 text-xs font-medium text-foreground hover:bg-accent transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleEdit(article.id);
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          编辑
+                        </motion.button>
+                        <motion.button 
+                          className="inline-flex items-center justify-center rounded-md border border-destructive/20 bg-destructive/5 px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDelete(article.id);
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          删除
+                        </motion.button>
                       </div>
                     </td>
-                    <td>{article.category || '未分类'}</td>
-                    <td>{article.visitCount || 0}</td>
-                    <td>{article.commentCount || 0}</td>
-                    <td>{formatDate(article.createTime)}</td>
-                    <td>
-                      <div className="dropdown dropdown-end">
-                        <button className="btn btn-ghost btn-sm btn-square">
-                          <EllipsisHorizontalIcon className="w-5 h-5" />
-                        </button>
-                        <ul className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40">
-                          <li>
-                            <button 
-                              className="w-full text-left"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleEdit(article.id);
-                              }}
-                            >
-                              编辑
-                            </button>
-                          </li>
-                          <li><a>预览</a></li>
-                          <li>
-                            <button 
-                              className="text-error w-full text-left"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleDelete(article.id);
-                              }}
-                            >
-                              删除
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
+                  </motion.tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+      </motion.div>
 
-        {/* 分页 */}
-        <div className="p-4 border-t border-base-200/80">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-base-content/60 order-2 lg:order-1">
-              共 {total} 篇文章
-            </div>
-            <div className="join order-1 lg:order-2">
-              <button 
-                className="join-item btn btn-sm"
-                onClick={() => handlePageChange(pageNum - 1)}
-                disabled={pageNum === 1 || loading}
-              >
-                «
-              </button>
-              
-              {/* 动态生成页码按钮 */}
+      {/* Pagination */}
+      {!loading && !error && articles.length > 0 && (
+        <motion.div 
+          className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 rounded-lg border bg-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
+          <div className="text-sm text-muted-foreground">
+            共 {total} 篇文章，第 {pageNum} 页，共 {totalPages} 页
+          </div>
+          <div className="flex items-center gap-2">
+            <motion.button 
+              className="inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => handlePageChange(pageNum - 1)}
+              disabled={pageNum === 1 || loading}
+              whileHover={{ scale: pageNum === 1 ? 1 : 1.05 }}
+              whileTap={{ scale: pageNum === 1 ? 1 : 0.95 }}
+            >
+              上一页
+            </motion.button>
+            
+            {/* Page numbers */}
+            <div className="flex items-center gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1)
                 .filter(page => {
-                  // 显示当前页码附近的页码和首尾页码
                   return page === 1 || 
                          page === totalPages || 
                          Math.abs(page - pageNum) <= 1;
                 })
                 .map((page, index, array) => {
-                  // 添加省略号
                   if (index > 0 && page - array[index - 1] > 1) {
                     return (
-                      <button key={`ellipsis-${page}`} className="join-item btn btn-sm btn-disabled">
+                      <span key={`ellipsis-${page}`} className="px-2 py-1 text-sm text-muted-foreground">
                         ...
-                      </button>
+                      </span>
                     );
                   }
                   return (
-                    <button
+                    <motion.button
                       key={page}
-                      className={`join-item btn btn-sm ${pageNum === page ? 'btn-active' : ''}`}
+                      className={`
+                        inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors
+                        ${pageNum === page 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'border border-border bg-background text-foreground hover:bg-accent'
+                        }
+                      `}
                       onClick={() => handlePageChange(page)}
                       disabled={loading}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       {page}
-                    </button>
+                    </motion.button>
                   );
                 })}
-
-              <button 
-                className="join-item btn btn-sm"
-                onClick={() => handlePageChange(pageNum + 1)}
-                disabled={pageNum === totalPages || loading}
-              >
-                »
-              </button>
             </div>
+
+            <motion.button 
+              className="inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => handlePageChange(pageNum + 1)}
+              disabled={pageNum === totalPages || loading}
+              whileHover={{ scale: pageNum === totalPages ? 1 : 1.05 }}
+              whileTap={{ scale: pageNum === totalPages ? 1 : 0.95 }}
+            >
+              下一页
+            </motion.button>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 } 

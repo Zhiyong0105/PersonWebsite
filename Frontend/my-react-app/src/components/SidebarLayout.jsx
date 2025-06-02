@@ -1,5 +1,5 @@
 import { HomeIcon, DocumentIcon, PencilSquareIcon, Bars3BottomLeftIcon, UserCircleIcon, UserGroupIcon, ChevronLeftIcon } from "@heroicons/react/24/solid";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import ThemeController from "./ThemeController";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,7 @@ export default function SidebarLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userRole, setUserRole] = useState('guest');
+  const location = useLocation();
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
@@ -49,30 +50,30 @@ export default function SidebarLayout() {
 
   const UserSection = () => (
     <motion.div 
-      className="flex items-center gap-3 p-4"
+      className="flex items-center gap-3 p-3"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
+      transition={{ delay: 0.2, duration: 0.3 }}
     >
       <div className="relative">
-        <div className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-primary/20">
+        <div className="w-8 h-8 rounded-lg overflow-hidden ring-2 ring-primary/10">
           <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" className="w-full h-full object-cover" />
         </div>
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+        <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background"></div>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-base-content truncate">用户名</p>
-        <p className="text-xs text-base-content/50 truncate">user@example.com</p>
+        <p className="text-xs font-semibold text-foreground truncate">用户名</p>
+        <p className="text-xs text-muted-foreground truncate">user@example.com</p>
       </div>
       <div className="dropdown dropdown-top dropdown-end">
-        <button tabIndex={0} className="btn btn-ghost btn-sm btn-circle hover:bg-base-200/50">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+        <button tabIndex={0} className="btn btn-ghost btn-xs p-1 h-6 w-6 rounded-md hover:bg-accent transition-colors duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
             <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
           </svg>
         </button>
-        <ul tabIndex={0} className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-xl w-48 mb-2 border border-base-200/50">
-          <li><a className="rounded-lg">个人设置</a></li>
-          <li><a className="text-error rounded-lg">退出登录</a></li>
+        <ul tabIndex={0} className="dropdown-content menu p-2 shadow-xl bg-popover rounded-lg w-40 mb-2 border border-border text-xs">
+          <li><a className="rounded-md py-2 px-3 text-xs hover:bg-accent transition-colors">个人设置</a></li>
+          <li><a className="text-destructive rounded-md py-2 px-3 text-xs hover:bg-destructive/10 transition-colors">退出登录</a></li>
         </ul>
       </div>
     </motion.div>
@@ -86,13 +87,14 @@ export default function SidebarLayout() {
 
   const renderMenuItem = (item, index) => {
     const isDisabled = item.requiredRole === 'admin' && userRole !== 'admin';
+    const isActive = location.pathname === item.path;
     
     return (
       <motion.div
         key={item.path}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.1 }}
+        transition={{ delay: index * 0.05, duration: 0.3 }}
       >
         <Link
           to={isDisabled ? '#' : item.path}
@@ -105,28 +107,51 @@ export default function SidebarLayout() {
             handleNavigation();
           }}
           className={`
-            flex items-center gap-3 px-4 py-3 mx-2 my-1
+            group relative flex items-center gap-3 px-3 py-2 mx-2 my-0.5 text-sm rounded-lg
+            transition-all duration-200 ease-in-out
             ${isDisabled 
-              ? 'text-base-content/30 cursor-not-allowed' 
-              : 'text-base-content/70 hover:text-primary hover:bg-primary/5'
+              ? 'text-muted-foreground/40 cursor-not-allowed' 
+              : isActive
+                ? 'bg-primary/10 text-primary font-medium shadow-sm border border-primary/20'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
             }
-            rounded-xl transition-all duration-200 
-            group relative overflow-hidden
           `}
         >
-          {!isDisabled && (
+          {/* Active state indicator */}
+          {isActive && !isDisabled && (
             <motion.div
-              className="absolute inset-0 bg-primary/5 rounded-xl"
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-primary rounded-r-full"
+              layoutId="activeIndicator"
               initial={{ scale: 0, opacity: 0 }}
-              whileHover={{ scale: 1, opacity: 1 }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.2 }}
             />
           )}
-          <item.icon className={`h-5 w-5 shrink-0 relative z-10 ${!isDisabled && 'group-hover:text-primary'}`} />
+          
+          <div className={`
+            w-4 h-4 shrink-0 transition-all duration-200
+            ${!isDisabled && 'group-hover:scale-110'}
+            ${isActive && !isDisabled ? 'text-primary' : ''}
+          `}>
+            <item.icon className="w-full h-full" />
+          </div>
+          
           {!isSidebarCollapsed && (
-            <span className={`font-medium truncate relative z-10 ${!isDisabled && 'group-hover:text-primary'}`}>
+            <span className={`
+              font-medium truncate transition-all duration-200 text-sm
+              ${isActive && !isDisabled ? 'text-primary' : ''}
+              ${!isDisabled && 'group-hover:text-foreground'}
+            `}>
               {item.text}
             </span>
+          )}
+          
+          {/* Hover effect background */}
+          {!isDisabled && !isActive && (
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              initial={false}
+            />
           )}
         </Link>
       </motion.div>
@@ -134,97 +159,107 @@ export default function SidebarLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-200/30 to-base-300/20">
-      {/* 移动端顶栏 */}
+    <div className="min-h-screen bg-background">
+      {/* Mobile header */}
       <motion.div 
-        className="lg:hidden flex items-center h-16 px-4 bg-white/80 backdrop-blur-xl border-b border-base-200/50 fixed top-0 left-0 right-0 z-40"
-        initial={{ y: -64 }}
+        className="lg:hidden flex items-center h-14 px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border fixed top-0 left-0 right-0 z-40 shadow-sm"
+        initial={{ y: -56 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3 }}
       >
-        <button 
-          className="btn btn-ghost btn-sm hover:bg-base-200/50"
+        <motion.button 
+          className="inline-flex items-center justify-center rounded-lg h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-all duration-200"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <Bars3BottomLeftIcon className="h-5 w-5" />
-        </button>
-        <h1 className="text-lg font-bold flex-1 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <Bars3BottomLeftIcon className="h-4 w-4" />
+        </motion.button>
+        <h1 className="text-lg font-bold flex-1 text-center bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
           管理后台
         </h1>
         <div className="flex items-center gap-2">
           <ThemeController />
           <div className="dropdown dropdown-end">
             <button tabIndex={0} className="btn btn-ghost btn-sm btn-circle avatar">
-              <div className="w-8 h-8 rounded-xl overflow-hidden ring-2 ring-primary/20">
+              <div className="w-7 h-7 rounded-lg overflow-hidden ring-1 ring-border">
                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" />
               </div>
             </button>
-            <ul tabIndex={0} className="dropdown-content menu p-2 shadow-xl bg-base-100 rounded-xl w-48 mt-4 border border-base-200/50">
-              <li><a className="rounded-lg">个人设置</a></li>
-              <li><a className="text-error rounded-lg">退出登录</a></li>
+            <ul tabIndex={0} className="dropdown-content menu p-2 shadow-xl bg-popover rounded-lg w-40 mt-2 border border-border text-xs">
+              <li><a className="rounded-md py-2 px-3 text-xs">个人设置</a></li>
+              <li><a className="text-destructive rounded-md py-2 px-3 text-xs">退出登录</a></li>
             </ul>
           </div>
         </div>
       </motion.div>
 
       <div className="flex min-h-screen">
-        {/* 侧边栏 */}
+        {/* Sidebar */}
         <motion.aside 
           className={`
-            ${isSidebarCollapsed ? 'w-20' : 'w-80'} 
+            ${isSidebarCollapsed ? 'w-16' : 'w-64'} 
             lg:block fixed lg:static inset-y-0 left-0 z-50
             transform transition-all duration-300 ease-in-out
-            bg-white/90 backdrop-blur-xl lg:transform-none border-r border-base-200/30
+            bg-background lg:transform-none border-r border-border/50
             ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-            lg:h-screen h-[calc(100vh-4rem)] lg:top-0 top-16 shadow-xl lg:shadow-none
+            lg:h-screen h-[calc(100vh-3.5rem)] lg:top-0 top-14
+            shadow-xl lg:shadow-none
           `}
-          initial={{ x: -320 }}
+          initial={{ x: -256 }}
           animate={{ x: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
         >
           <div className="flex flex-col h-full">
-            {/* Logo 区域 */}
+            {/* Logo area */}
             <motion.div 
-              className="p-6 border-b border-base-200/30 shrink-0 flex items-center justify-between"
+              className="p-4 border-b border-border/50 shrink-0 flex items-center justify-between"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center ring-2 ring-primary/10">
-                  <PencilSquareIcon className="h-6 w-6 text-primary" />
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="w-7 h-7 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center shadow-md shrink-0">
+                  <PencilSquareIcon className="h-4 w-4 text-primary-foreground" />
                 </div>
                 {!isSidebarCollapsed && (
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    管理后台
-                  </h1>
+                  <div className="min-w-0 flex-1">
+                    <h1 className="text-base font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent truncate">
+                      管理后台
+                    </h1>
+                    <p className="text-xs text-muted-foreground truncate">
+                      内容管理系统
+                    </p>
+                  </div>
                 )}
               </div>
-              {/* 折叠按钮 - 仅在桌面端显示 */}
-              <button 
-                className="hidden lg:block btn btn-ghost btn-sm btn-circle hover:bg-base-200/50"
+              {/* Collapse button - desktop only */}
+              <motion.button 
+                className="hidden lg:inline-flex items-center justify-center rounded-lg h-7 w-7 hover:bg-accent hover:text-accent-foreground transition-all duration-200 shrink-0"
                 onClick={() => setSidebarCollapsed(!isSidebarCollapsed)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <ChevronLeftIcon className={`h-4 w-4 transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-180' : ''}`} />
-              </button>
+                <ChevronLeftIcon className={`h-3 w-3 transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-180' : ''}`} />
+              </motion.button>
             </motion.div>
 
-            {/* 导航菜单 */}
-            <nav className="flex-1 px-2 py-6 overflow-y-auto">
+            {/* Navigation menu */}
+            <nav className="flex-1 p-3 overflow-y-auto">
               <div className="space-y-1">
                 {menuItems.map((item, index) => renderMenuItem(item, index))}
               </div>
             </nav>
 
-            {/* 用户信息区域 */}
-            <div className="border-t border-base-200/30 bg-base-50/30">
-              <div className="p-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            {/* User info area */}
+            <div className="border-t border-border/50 bg-muted/10">
+              <div className="p-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center">
                     <ThemeController />
                   </div>
                   {!isSidebarCollapsed && (
-                    <span className="text-sm text-base-content/60 font-medium">主题切换</span>
+                    <span className="text-xs text-muted-foreground font-medium">主题设置</span>
                   )}
                 </div>
                 {!isSidebarCollapsed ? (
@@ -232,10 +267,10 @@ export default function SidebarLayout() {
                 ) : (
                   <div className="flex justify-center">
                     <div className="relative">
-                      <div className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-primary/20">
+                      <div className="w-8 h-8 rounded-lg overflow-hidden ring-1 ring-border">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="avatar" />
                       </div>
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background"></div>
                     </div>
                   </div>
                 )}
@@ -244,11 +279,11 @@ export default function SidebarLayout() {
           </div>
         </motion.aside>
 
-        {/* 遮罩层 */}
+        {/* Overlay */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div 
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -258,19 +293,19 @@ export default function SidebarLayout() {
           )}
         </AnimatePresence>
 
-        {/* 主内容区 */}
+        {/* Main content area */}
         <main className={`
           flex-1 transition-all duration-300
-          ${isSidebarCollapsed ? 'lg:pl-5' : 'lg:pl-3'}
-          lg:pt-0 pt-16 w-full
+          lg:pt-0 pt-14 w-full min-h-screen
+          bg-gradient-to-br from-background to-muted/5
         `}>
           <motion.div 
-            className="h-[calc(100vh-4rem)] lg:h-screen overflow-auto p-4 lg:p-8"
+            className="h-[calc(100vh-3.5rem)] lg:h-screen overflow-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
           >
-            <div className="h-full max-w-[1600px] mx-auto">
+            <div className="w-full p-4 sm:p-6 lg:p-8 xl:p-12">
               <Outlet />
             </div>
           </motion.div>
