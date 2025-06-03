@@ -69,18 +69,27 @@ export default function BlogLayout({ children }) {
 
     return (
         <>
-            <div className="min-h-screen flex flex-col">
-                <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 xl:max-w-4xl xl:px-0">
-                    <BlogHeader 
-                        onLoginClick={() => setIsLoginModalOpen(true)}
-                        isAuthenticated={isAuthenticated}
-                        onLogout={handleLogout}
-                    />
+            <div className="min-h-screen bg-gray-50">
+                {/* Header */}
+                <header className="bg-white border-b border-gray-200">
+                    <div className="w-full px-6 lg:px-8">
+                        <BlogHeader 
+                            onLoginClick={() => setIsLoginModalOpen(true)}
+                            isAuthenticated={isAuthenticated}
+                            onLogout={handleLogout}
+                        />
+                    </div>
+                </header>
+                
+                {/* 主要内容区域 */}
+                <div className="flex-1">
                     <MainWrapper>
                         {children}
                     </MainWrapper>
                 </div>
-                <Footer className="mt-auto" />
+                
+                {/* Footer */}
+                <Footer />
             </div>
 
             <LoginModal

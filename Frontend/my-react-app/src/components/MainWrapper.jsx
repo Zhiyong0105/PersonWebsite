@@ -7,7 +7,7 @@ export default function MainWrapper({ children }) {
 
     return (
         <main 
-            className={`duration-1000 w-full  ${page == "/" ? "translate-y-20 mt-20 mb-20" : "mt-16"} min-h-[calc(100svh-350px)]`}
+            className={`w-full ${page == "/" ? "translate-y-20 mt-20 mb-20" : ""} min-h-[calc(100vh-200px)]`}
         >
             {children}
         </main>

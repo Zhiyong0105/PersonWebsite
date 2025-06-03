@@ -1,16 +1,12 @@
 import { Link } from "react-router-dom";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import ThemeController from "./ThemeController";
-import { CiSearch } from "react-icons/ci";
 import { useState, useEffect } from "react";
 import UserButton from "./UserButton";
-import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { FiLogIn } from "react-icons/fi";
-import SearchModal from "./SearchModal";
 
 export default function BlogHeader({ onLoginClick }) {
     const [isLogin, setIsLogin] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
 
     // 检查登录状态
     const checkLoginStatus = () => {
@@ -30,62 +26,37 @@ export default function BlogHeader({ onLoginClick }) {
     }, []);
 
     return (
-        <div className="flex items-center justify-between py-10 w-full">
-            <SearchModal isOpen={isOpen} closeModal={() => setIsOpen(false)} />
-            
-            {/* Logo部分 */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-                <HiOutlineEmojiHappy className="h-6 w-6" />
-                <div className="hidden h-6 items-center text-2xl font-semibold leading-6 sm:block">
-                    <Link to={"/article"}>AbstractP.dev</Link>
+        <div className="flex items-center justify-between py-4 w-full">
+            {/* Logo区域 */}
+            <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gray-900 rounded-lg">
+                        <HiOutlineEmojiHappy className="h-5 w-5 text-white" />
+                    </div>
+                    <Link to={"/article"} className="text-xl font-semibold text-gray-900 hover:text-gray-700 transition-colors">
+                        AbstractP.dev
+                    </Link>
                 </div>
             </div>
 
-            {/* 中间部分 */}
-            <div className="flex items-center space-x-4 leading-5 sm:space-x-6 flex-grow justify-end">
-                {/* 搜索按钮 */}
-                <button 
-                    className="btn btn-ghost btn-sm" 
-                    onClick={() => setIsOpen(true)}
-                >
-                    <CiSearch className="h-5 w-5" />
-                </button>
-
+            {/* 右侧功能区 */}
+            <div className="flex items-center gap-3">
                 {/* 登录/用户按钮 */}
                 {isLogin ? (
                     <UserButton />
                 ) : (
                     <button
                         onClick={onLoginClick}
-                        className="btn btn-sm bg-base-200 hover:bg-base-300 border-none 
-                                 text-base-content gap-2 normal-case font-medium"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors"
                     >
                         <FiLogIn className="w-4 h-4" />
-                        登录
+                        <span>登录</span>
                     </button>
                 )}
 
                 {/* 主题切换按钮 */}
-                <div className=" sm:block">
-                    <ThemeController />
-                </div>
+                <ThemeController />
             </div>
-
-            {/* 移动端菜单 */}
-            {/* <div className="sm:hidden flex-shrink-0">
-                <div className="dropdown dropdown-hover dropdown-end">
-                    <div tabIndex={0} role="button" className="btn m-1 btn-ghost">
-                        <IoIosArrowDropdownCircle className="h-6 w-6" />
-                    </div>
-                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                        <li><Link to="/">首页</Link></li>
-                        <li><Link to="/category">分类</Link></li>
-                        <li className="flex justify-center items-center w-full">
-                            <ThemeController />
-                        </li>
-                    </ul>
-                </div>
-            </div> */}
         </div>
     );
 }
