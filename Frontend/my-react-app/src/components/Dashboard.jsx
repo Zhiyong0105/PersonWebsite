@@ -172,7 +172,7 @@ export default function Dashboard() {
         aria-label="Breadcrumb"
         variants={itemVariants}
       >
-        <ol className="flex items-center space-x-1 text-sm text-gray-500">
+        <ol className="flex items-center text-sm text-gray-500">
           {breadcrumbs.map((crumb, index) => (
             <li key={crumb.name} className="flex items-center">
               {index > 0 && (

@@ -258,7 +258,7 @@ export default function UserManager() {
         aria-label="Breadcrumb"
         variants={item}
       >
-        <ol className="flex items-center space-x-1 text-sm text-gray-500">
+        <ol className="flex items-center text-sm text-gray-500">
           {breadcrumbs.map((crumb, index) => (
             <li key={crumb.name} className="flex items-center">
               {index > 0 && (

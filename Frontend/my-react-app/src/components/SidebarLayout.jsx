@@ -179,15 +179,13 @@ export default function SidebarLayout() {
         </div>
       </motion.div>
 
-      <div className="flex min-h-screen">
+      <div className="flex h-screen">
         {/* Sidebar */}
         <motion.aside 
           className={`
-            w-64 
-            lg:block fixed lg:static inset-y-0 left-0 z-50
-            bg-white border-r border-gray-200 shadow-sm
+            bg-white border-r border-gray-200 shadow-sm z-40
+            lg:relative lg:block fixed lg:static
             ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-            lg:h-screen h-[calc(100vh-4rem)] lg:top-0 top-16
           `}
           initial={{ x: -256 }}
           animate={{ 
@@ -199,7 +197,7 @@ export default function SidebarLayout() {
           <div className="flex flex-col h-full">
             {/* Logo area */}
             <motion.div 
-              className="flex items-center justify-between px-4 py-4 border-b border-gray-200"
+              className="flex items-center justify-between px-4 py-4 border-b border-gray-200 lg:mt-0 mt-16"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.3 }}
@@ -338,7 +336,7 @@ export default function SidebarLayout() {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div 
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -349,10 +347,10 @@ export default function SidebarLayout() {
         </AnimatePresence>
 
         {/* Main content area */}
-        <main className="flex-1 lg:pt-0 pt-16 bg-gray-50 min-h-screen">
+        <main className="flex-1 bg-gray-50 h-screen flex flex-col">
           {/* Top bar */}
           <motion.div 
-            className="hidden lg:flex items-center justify-between bg-white border-b border-gray-200 px-6 py-4"
+            className="hidden lg:flex items-center justify-between bg-white border-b border-gray-200 px-6 py-4 flex-shrink-0"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
@@ -394,14 +392,16 @@ export default function SidebarLayout() {
             </div>
           </motion.div>
 
-          {/* Main content */}
+          {/* Main content - Scrollable area */}
           <motion.div 
-            className="w-full px-6 lg:px-8 xl:px-12 py-4"
+            className="flex-1 overflow-y-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
           >
-            <Outlet />
+            <div className="w-full px-6 lg:px-8 xl:px-12 py-4 pb-8">
+              <Outlet />
+            </div>
           </motion.div>
         </main>
       </div>
