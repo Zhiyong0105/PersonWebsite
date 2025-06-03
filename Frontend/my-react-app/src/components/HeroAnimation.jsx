@@ -121,7 +121,7 @@ export default function HeroAnimation() {
 
           <div className="relative group">
             <a 
-              href="/article"
+              href="/blog"
               className="btn btn-ghost btn-circle text-base-content/80 
                        hover:text-base-content"
             >

@@ -7,7 +7,8 @@ const Navbar = ({ page, onSectionClick }) => {
   
   const navigationItems = [
     { name: "Home", href: "#home" },
-    { name: "Project", href: "#project" },
+    { name: "Projects", href: "#project" },
+    { name: "Blog", href: "#blog" },
     { name: "About", href: "#about" },
     { name: "Experience", href: "#experience" },
   ];

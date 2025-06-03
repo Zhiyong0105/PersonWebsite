@@ -3,6 +3,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import Projects from "../components/Projects";
 import About from "../components/About";
 import Experience from "../components/Experience";
+import SimpleArticleList from "../components/SimpleArticleList";
 import FloatingButton from "../components/FloatingButton";
 import ThemeController from "../components/ThemeController";
 import HeroAnimation from "../components/HeroAnimation";
@@ -14,6 +15,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState("home");
   const homeRef = useRef(null);
   const projectsRef = useRef(null);
+  const blogRef = useRef(null);
   const aboutRef = useRef(null);
   const experienceRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -21,6 +23,7 @@ export default function Home() {
   const sectionRefs = {
     home: homeRef,
     project: projectsRef,
+    blog: blogRef,
     about: aboutRef,
     experience: experienceRef,
   };
@@ -116,7 +119,7 @@ export default function Home() {
                 <div className="flex items-center gap-4">
                   <ThemeController />
                   <motion.a 
-                    href="/article"
+                    href="/blog"
                     className="px-4 py-2 rounded-full bg-primary/10 hover:bg-primary/20 
                              text-primary transition-all duration-300 text-sm"
                     whileHover={{ scale: 1.05 }}
@@ -173,6 +176,31 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Blog Section - 新增 */}
+        <section 
+          ref={blogRef} 
+          id="blog" 
+          className="py-16 bg-white"
+        >
+          <div className="container mx-auto px-6">
+            <motion.div
+              className="max-w-4xl mx-auto"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest Posts</h2>
+                <p className="text-xl text-gray-600">
+                  分享技术见解与编程经验
+                </p>
+              </div>
+              <SimpleArticleList />
+            </motion.div>
+          </div>
+        </section>
+
         {/* About Section - 减少上下内边距 */}
         <section 
           ref={aboutRef} 
@@ -181,27 +209,27 @@ export default function Home() {
         >
           <div className="container mx-auto px-6">
             <motion.h2 
-              className="text-3xl font-bold text-center mb-12 bg-clip-text 
+              className="text-3xl font-bold text-center mb-10 bg-clip-text 
                        text-transparent bg-gradient-to-r from-primary to-secondary"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              About Me
+              About
             </motion.h2>
             <About />
           </div>
         </section>
 
-        {/* Experience Section - 减少上下内边距并添加 margin-bottom */}
+        {/* Experience Section - 减少上下内边距 */}
         <section 
           ref={experienceRef} 
           id="experience" 
-          className="py-16 mb-8 bg-gradient-to-b from-base-200/50 to-base-100"
+          className="py-16 bg-gradient-to-b from-base-100 to-base-200/50"
         >
           <div className="container mx-auto px-6">
             <motion.h2 
-              className="text-3xl font-bold text-center mb-12 bg-clip-text 
+              className="text-3xl font-bold text-center mb-10 bg-clip-text 
                        text-transparent bg-gradient-to-r from-primary to-secondary"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -217,7 +245,11 @@ export default function Home() {
       {/* Footer */}
       <Footer />
 
-
+      {/* 浮动按钮 */}
+      <FloatingButton 
+        showScrollTop={showScrollTop}
+        onScrollToTop={() => scrollToSection('home')}
+      />
     </div>
   );
 }
