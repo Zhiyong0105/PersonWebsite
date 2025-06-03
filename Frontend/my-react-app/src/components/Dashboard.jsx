@@ -3,25 +3,25 @@ import { motion } from 'framer-motion';
 import { 
   DocumentTextIcon, 
   EyeIcon,  
-  ChatBubbleLeftIcon,
-  CalendarDaysIcon,
-  UserGroupIcon,
-  PlusIcon,
-  HandThumbUpIcon,
-  ArrowTrendingUpIcon,
   ChartBarIcon,
-  ClockIcon,
-  FireIcon,
-  StarIcon,
+  UserGroupIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  PencilSquareIcon,
+  HeartIcon,
+  ChartPieIcon,
 } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
     totalArticles: 0,
     totalViews: 0,
     totalLikes: 0,
-    totalComments: 0
+    totalComments: 0,
+    users: 1234,
+    articles: 567,
+    views: 89012,
+    likes: 3456
   });
   const [recentArticles, setRecentArticles] = useState([]);
   const [drafts, setDrafts] = useState([]);
@@ -69,64 +69,56 @@ export default function Dashboard() {
     }
   };
 
-  const statCards = [
+  // Breadcrumb data
+  const breadcrumbs = [
+    { name: '首页', href: '#' },
+    { name: 'Dashboard', current: true }
+  ];
+
+  // Stats configuration
+  const statsConfig = [
     {
-      title: '总文章数',
-      value: stats.totalArticles || 15,
+      name: '用户总数',
+      value: stats.users.toLocaleString(),
+      change: '+12%',
+      changeType: 'increase',
+      icon: UserGroupIcon,
+      color: 'indigo'
+    },
+    {
+      name: '文章数量',
+      value: stats.articles.toLocaleString(),
+      change: '+8%',
+      changeType: 'increase',
       icon: DocumentTextIcon,
-      iconColor: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      trend: '+12%'
+      color: 'green'
     },
     {
-      title: '总浏览量',
-      value: stats.totalViews || 2486,
+      name: '总浏览量',
+      value: stats.views.toLocaleString(),
+      change: '+24%',
+      changeType: 'increase',
       icon: EyeIcon,
-      iconColor: 'text-green-600',
-      bgColor: 'bg-green-50',
-      trend: '+8%'
+      color: 'blue'
     },
     {
-      title: '总点赞数',
-      value: stats.totalLikes || 348,
-      icon: HandThumbUpIcon,
-      iconColor: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      trend: '+15%'
-    },
-    {
-      title: '总评论数',
-      value: stats.totalComments || 127,
-      icon: ChatBubbleLeftIcon,
-      iconColor: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      trend: '+5%'
+      name: '点赞数',
+      value: stats.likes.toLocaleString(),
+      change: '-2%',
+      changeType: 'decrease',
+      icon: HeartIcon,
+      color: 'red'
     }
   ];
 
-  const activityData = [
-    { day: '周一', articles: 2, views: 156 },
-    { day: '周二', articles: 1, views: 89 },
-    { day: '周三', articles: 3, views: 234 },
-    { day: '周四', articles: 0, views: 67 },
-    { day: '周五', articles: 1, views: 123 },
-    { day: '周六', articles: 2, views: 178 },
-    { day: '周日', articles: 1, views: 145 }
+  // Recent activities data
+  const recentActivities = [
+    { id: 1, action: '新用户注册', user: '张三', time: '2 分钟前' },
+    { id: 2, action: '发布文章', user: '李四', time: '5 分钟前' },
+    { id: 3, action: '文章获得点赞', user: '王五', time: '10 分钟前' },
+    { id: 4, action: '用户留言', user: '赵六', time: '15 分钟前' },
+    { id: 5, action: '文章被分享', user: '孙七', time: '20 分钟前' }
   ];
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '未知时间';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return '1天前';
-    if (diffDays < 7) return `${diffDays}天前`;
-    if (diffDays < 30) return `${Math.ceil(diffDays / 7)}周前`;
-    if (diffDays < 365) return `${Math.ceil(diffDays / 30)}个月前`;
-    return `${Math.ceil(diffDays / 365)}年前`;
-  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -169,401 +161,179 @@ export default function Dashboard() {
 
   return (
     <motion.div 
-      className="space-y-6 w-full"
+      className="w-full space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      {/* Header */}
-      <motion.div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-6"
+      {/* Breadcrumb */}
+      <motion.nav 
+        className="flex" 
+        aria-label="Breadcrumb"
         variants={itemVariants}
       >
-        <div className="space-y-2">
-          <h1 className="text-3xl font-semibold text-gray-700">
-            仪表板概览
-          </h1>
-          <p className="text-gray-500">
-            欢迎回来，查看您的博客统计数据与最新动态
+        <ol className="flex items-center space-x-1 text-sm text-gray-500">
+          {breadcrumbs.map((crumb, index) => (
+            <li key={crumb.name} className="flex items-center">
+              {index > 0 && (
+                <svg className="flex-shrink-0 h-4 w-4 text-gray-300 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
+              {crumb.current ? (
+                <span className="font-medium text-gray-900">{crumb.name}</span>
+              ) : (
+                <a href={crumb.href} className="hover:text-gray-700 transition-colors">
+                  {crumb.name}
+                </a>
+              )}
+            </li>
+          ))}
+        </ol>
+      </motion.nav>
+
+      {/* Page Header */}
+      <motion.div 
+        className="flex items-center justify-between"
+        variants={itemVariants}
+      >
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            欢迎回来！这里是您的管理面板概览
           </p>
         </div>
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <Link 
-            to="/admin/editor" 
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 hover:bg-indigo-100 px-6 py-3 text-sm font-medium text-gray-700 transition-all duration-200 shadow-sm"
-          >
-            <PlusIcon className="h-5 w-5" />
-            写新文章
-          </Link>
-        </motion.div>
+        <div className="flex items-center gap-3">
+          <button className="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors flex items-center gap-2 text-sm font-medium">
+            <ChartBarIcon className="h-4 w-4" />
+            导出报告
+          </button>
+        </div>
       </motion.div>
 
-      {/* Stats cards */}
+      {/* Stats Grid */}
       <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-2 md:grid-cols-4 gap-6"
         variants={itemVariants}
       >
-        {statCards.map((card, index) => (
+        {statsConfig.map((stat, index) => (
           <motion.div
-            key={card.title}
-            className="group relative overflow-hidden rounded-xl bg-white border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300"
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ 
-              duration: 0.4, 
-              delay: index * 0.1,
-              type: "spring",
-              stiffness: 100
-            }}
-            whileHover={{ 
-              y: -4,
-              scale: 1.02,
-              transition: { duration: 0.2 }
-            }}
+            key={stat.name}
+            className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200"
+            whileHover={{ y: -2 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="flex items-start justify-between">
-              <div className="space-y-3 flex-1">
-                <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">
-                  {card.title}
-                </p>
-                <div className="space-y-2">
-                  <p className="text-lg font-medium text-gray-700 leading-none">
-                    {card.value.toLocaleString()}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <ArrowTrendingUpIcon className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-600">{card.trend}</span>
-                    <span className="text-sm text-gray-500">本月</span>
-                  </div>
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-gray-500 font-medium">{stat.name}</p>
+                <p className="text-2xl font-semibold text-gray-900 mt-1">{stat.value}</p>
+                <div className="flex items-center mt-2">
+                  {stat.changeType === 'increase' ? (
+                    <ArrowUpIcon className="h-3 w-3 text-green-500 mr-1" />
+                  ) : (
+                    <ArrowDownIcon className="h-3 w-3 text-red-500 mr-1" />
+                  )}
+                  <span className={`text-xs font-medium ${
+                    stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {stat.change}
+                  </span>
+                  <span className="text-xs text-gray-500 ml-1">vs 上月</span>
                 </div>
               </div>
-              <div className={`w-12 h-12 rounded-xl ${card.bgColor} flex items-center justify-center transition-all duration-300 group-hover:scale-110 transform`}>
-                <card.icon className={`h-6 w-6 ${card.iconColor}`} />
+              <div className={`p-3 rounded-lg bg-${stat.color}-50`}>
+                <stat.icon className={`h-6 w-6 text-${stat.color}-600`} />
               </div>
             </div>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Two column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent articles - takes 2 columns */}
-        <motion.div
-          className="lg:col-span-2 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
-          variants={itemVariants}
-        >
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                  <FireIcon className="h-5 w-5 text-orange-500" />
-                  最近文章
-                </h2>
-                <p className="text-sm text-gray-500">最新发布的文章内容</p>
-              </div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link 
-                  to="/admin/articles" 
-                  className="inline-flex items-center justify-center rounded-lg bg-gray-100 hover:bg-indigo-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200"
-                >
-                  查看全部
-                </Link>
-              </motion.div>
-            </div>
-          </div>
-
-          <div className="p-6">
-            {recentArticles.length === 0 ? (
-              <motion.div 
-                className="text-center py-12"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="w-20 h-20 mx-auto mb-6 rounded-xl bg-gray-100 flex items-center justify-center">
-                  <DocumentTextIcon className="h-10 w-10 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-3">还没有文章</h3>
-                <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                  开始创作您的第一篇文章，分享您的想法和见解
-                </p>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link 
-                    to="/admin/editor" 
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 hover:bg-indigo-100 px-6 py-3 text-sm font-medium text-gray-700 transition-all duration-200"
-                  >
-                    <PlusIcon className="h-5 w-5" />
-                    开始写作
-                  </Link>
-                </motion.div>
-              </motion.div>
-            ) : (
-              <div className="space-y-4">
-                {recentArticles.map((article, index) => (
-                  <motion.div
-                    key={article.id}
-                    className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 hover:shadow-sm hover:border-gray-300 transition-all duration-300"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    whileHover={{ x: 4 }}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0 space-y-2">
-                        <h3 className="text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors duration-200 truncate">
-                          {article.title || '无标题'}
-                        </h3>
-                        <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
-                          {article.excerpt || article.content?.substring(0, 100) + '...' || '暂无内容'}
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <CalendarDaysIcon className="h-4 w-4" />
-                            <span>{formatDate(article.createdAt)}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <EyeIcon className="h-4 w-4" />
-                            <span>{article.views || 0}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <HandThumbUpIcon className="h-4 w-4" />
-                            <span>{article.likes || 0}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className={`
-                          inline-flex items-center rounded-full px-3 py-1 text-xs font-medium
-                          ${article.status === 'published' 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-amber-100 text-amber-700'
-                          }
-                        `}>
-                          {article.status === 'published' ? '已发布' : '草稿'}
-                        </span>
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Link 
-                            to={`/admin/editor/${article.id}`}
-                            className="inline-flex items-center justify-center rounded-lg bg-gray-100 hover:bg-indigo-100 px-3 py-1 text-sm font-medium text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-200"
-                          >
-                            编辑
-                          </Link>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        {/* Right sidebar */}
-        <div className="space-y-6">
-          {/* Drafts section */}
-          <motion.div
-            className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
-            variants={itemVariants}
-          >
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <ClockIcon className="h-5 w-5 text-amber-500" />
-                草稿箱
-              </h3>
-            </div>
-            <div className="p-4">
-              {drafts.length === 0 ? (
-                <div className="text-center py-8">
-                  <DocumentTextIcon className="h-8 w-8 text-gray-400 mx-auto mb-3" />
-                  <p className="text-sm text-gray-500">暂无草稿</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {drafts.map((draft, index) => (
-                    <motion.div
-                      key={draft.id}
-                      className="group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <h4 className="text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors truncate">
-                        {draft.title}
-                      </h4>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {formatDate(draft.updatedAt)}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Recent comments section */}
-          <motion.div
-            className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
-            variants={itemVariants}
-          >
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <ChatBubbleLeftIcon className="h-5 w-5 text-blue-500" />
-                最新评论
-              </h3>
-            </div>
-            <div className="p-4">
-              {recentComments.length === 0 ? (
-                <div className="text-center py-8">
-                  <ChatBubbleLeftIcon className="h-8 w-8 text-gray-400 mx-auto mb-3" />
-                  <p className="text-sm text-gray-500">暂无评论</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {recentComments.map((comment, index) => (
-                    <motion.div
-                      key={comment.id}
-                      className="group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                          <span className="text-sm font-medium text-indigo-600">
-                            {comment.author[0]}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-700 line-clamp-2">
-                            {comment.content}
-                          </p>
-                          <div className="mt-2 text-sm text-gray-500">
-                            <span className="font-medium">{comment.author}</span>
-                            <span className="mx-2">·</span>
-                            <span>{formatDate(comment.createdAt)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Activity chart */}
-          <motion.div
-            className="rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300"
-            variants={itemVariants}
-          >
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <ChartBarIcon className="h-5 w-5 text-purple-500" />
-                本周活动
-              </h3>
-            </div>
-            <div className="p-4">
-              <div className="space-y-2">
-                {activityData.map((day, index) => (
-                  <motion.div
-                    key={day.day}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                  >
-                    <span className="text-sm font-medium text-gray-700">{day.day}</span>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span>{day.articles} 篇</span>
-                      <span>{day.views} 次浏览</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Quick actions */}
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
+      {/* Charts Section */}
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         variants={itemVariants}
       >
-        <motion.div
-          whileHover={{ y: -2, transition: { duration: 0.2 } }}
-        >
-          <Link 
-            to="/admin/editor" 
-            className="group block rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-300"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-200 group-hover:scale-110 transition-all duration-300">
-                <PlusIcon className="h-6 w-6 text-indigo-600" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors duration-200">
-                  写新文章
-                </h3>
-                <p className="text-sm text-gray-500">创作新的博客内容和想法</p>
-              </div>
+        {/* Bar Chart */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">用户增长趋势</h3>
+            <ChartBarIcon className="h-5 w-5 text-gray-400" />
+          </div>
+          <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="text-center">
+              <ChartBarIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">图表数据加载中...</p>
             </div>
-          </Link>
-        </motion.div>
+          </div>
+        </div>
 
-        <motion.div
-          whileHover={{ y: -2, transition: { duration: 0.2 } }}
-        >
-          <Link 
-            to="/admin/articles" 
-            className="group block rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 group-hover:scale-110 transition-all duration-300">
-                <DocumentTextIcon className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-semibold text-gray-700 group-hover:text-blue-600 transition-colors duration-200">
-                  管理文章
-                </h3>
-                <p className="text-sm text-gray-500">编辑和管理已有的文章内容</p>
-              </div>
+        {/* Pie Chart */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">内容分类统计</h3>
+            <ChartPieIcon className="h-5 w-5 text-gray-400" />
+          </div>
+          <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="text-center">
+              <ChartPieIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">图表数据加载中...</p>
             </div>
-          </Link>
-        </motion.div>
+          </div>
+        </div>
+      </motion.div>
 
-        <motion.div
-          whileHover={{ y: -2, transition: { duration: 0.2 } }}
-        >
-          <Link 
-            to="/admin/users" 
-            className="group block rounded-xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-green-200 transition-all duration-300"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
-                <UserGroupIcon className="h-6 w-6 text-green-600" />
+      {/* Recent Activities and Quick Actions */}
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        variants={itemVariants}
+      >
+        {/* Recent Activities */}
+        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-md">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">最近活动</h3>
+            <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+              查看全部
+            </button>
+          </div>
+          <div className="space-y-4">
+            {recentActivities.map((activity) => (
+              <div key={activity.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                    <p className="text-xs text-gray-500">by {activity.user}</p>
+                  </div>
+                </div>
+                <span className="text-xs text-gray-500">{activity.time}</span>
               </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-semibold text-gray-700 group-hover:text-green-600 transition-colors duration-200">
-                  用户管理
-                </h3>
-                <p className="text-sm text-gray-500">管理用户账户和权限设置</p>
-              </div>
-            </div>
-          </Link>
-        </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">快速操作</h3>
+          <div className="space-y-3">
+            <button className="w-full bg-indigo-50 text-indigo-600 px-4 py-3 rounded-lg hover:bg-indigo-100 transition-colors text-sm font-medium text-left flex items-center gap-3">
+              <PencilSquareIcon className="h-4 w-4" />
+              写新文章
+            </button>
+            <button className="w-full bg-gray-50 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium text-left flex items-center gap-3">
+              <UserGroupIcon className="h-4 w-4" />
+              用户管理
+            </button>
+            <button className="w-full bg-gray-50 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium text-left flex items-center gap-3">
+              <DocumentTextIcon className="h-4 w-4" />
+              文章管理
+            </button>
+            <button className="w-full bg-gray-50 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors text-sm font-medium text-left flex items-center gap-3">
+              <ChartBarIcon className="h-4 w-4" />
+              数据统计
+            </button>
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   );
